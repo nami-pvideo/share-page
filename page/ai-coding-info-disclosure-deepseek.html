@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信息披露管理：提升 AI 编程效率的核心杠杆</title>
+<style>
+:root {
+  --bg: #f8f9fb;
+  --card-bg: #ffffff;
+  --text: #1a1a2e;
+  --text-secondary: #5b5b7a;
+  --accent: #4f46e5;
+  --accent-light: #eef2ff;
+  --accent2: #0ea5e9;
+  --accent3: #f59e0b;
+  --border: #e5e7eb;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 24px rgba(0,0,0,.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+/* Hero */
+.hero { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0ea5e9 100%); color: #fff; padding: 80px 24px 100px; text-align: center; position: relative; overflow: hidden; }
+.hero::after { content:''; position:absolute; inset:0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+.hero h1 { font-size:clamp(2rem,5vw,3.2rem); font-weight:800; margin-bottom:16px; position:relative; z-index:1; letter-spacing:-.02em; }
+.hero p { font-size:1.15rem; opacity:.9; max-width:650px; margin:0 auto; position:relative; z-index:1; }
+.hero .badge { display:inline-block; background:rgba(255,255,255,.18); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.2); padding:6px 18px; border-radius:99px; font-size:.85rem; margin-bottom:24px; position:relative; z-index:1; }
+
+/* Layout */
+.container { max-width:1100px; margin:0 auto; padding:0 24px; }
+nav.toc { background:var(--card-bg); border-radius:var(--radius); box-shadow:var(--shadow-lg); padding:28px 32px; margin-top:-48px; position:relative; z-index:10; }
+nav.toc h2 { font-size:1.1rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.08em; margin-bottom:16px; }
+nav.toc ol { columns:2; column-gap:32px; }
+nav.toc li { margin-bottom:8px; break-inside:avoid; }
+nav.toc a { color:var(--accent); text-decoration:none; font-weight:500; font-size:.95rem; }
+nav.toc a:hover { text-decoration:underline; }
+
+section { margin:64px 0; }
+.section-title { font-size:1.75rem; font-weight:700; margin-bottom:8px; }
+.section-subtitle { color:var(--text-secondary); margin-bottom:32px; font-size:1.05rem; }
+
+/* Card */
+.card { background:var(--card-bg); border-radius:var(--radius); box-shadow:var(--shadow); padding:28px 32px; margin-bottom:24px; border:1px solid var(--border); }
+.card.interactive { cursor:default; }
+
+/* Info Layer - 三层信息模型 */
+.layers { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin:24px 0; }
+.layer-card { background:var(--card-bg); border-radius:var(--radius); padding:24px; border:2px solid var(--border); position:relative; overflow:hidden; transition:all .25s; }
+.layer-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-lg); }
+.layer-card .layer-num { font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
+.layer-card.world { border-color:#10b981; }
+.layer-card.world .layer-num { color:#10b981; }
+.layer-card.team { border-color:#f59e0b; }
+.layer-card.team .layer-num { color:#f59e0b; }
+.layer-card.demand { border-color:#ef4444; }
+.layer-card.demand .layer-num { color:#ef4444; }
+.layer-card h4 { font-size:1.1rem; margin-bottom:8px; }
+.layer-card .status { font-size:.8rem; padding:2px 10px; border-radius:99px; display:inline-block; margin-bottom:10px; }
+.status.full { background:#d1fae5; color:#065f46; }
+.status.empty { background:#fef3c7; color:#92400e; }
+.layer-card p { font-size:.9rem; color:var(--text-secondary); }
+
+/* Disclosure Spectrum */
+.spectrum { display:flex; align-items:stretch; gap:0; margin:24px 0; border-radius:var(--radius); overflow:hidden; }
+.spectrum-stage { flex:1; padding:20px 16px; text-align:center; position:relative; }
+.spectrum-stage:nth-child(1) { background:#fef2f2; }
+.spectrum-stage:nth-child(2) { background:#fff7ed; }
+.spectrum-stage:nth-child(3) { background:#fefce8; }
+.spectrum-stage:nth-child(4) { background:#f0fdf4; }
+.spectrum-stage .stage-label { font-weight:700; font-size:.85rem; margin-bottom:6px; }
+.spectrum-stage .stage-desc { font-size:.8rem; color:var(--text-secondary); }
+.spectrum-arrow { display:flex; align-items:center; padding:0 4px; color:var(--text-secondary); font-weight:700; }
+
+/* Tab System */
+.tabs { display:flex; gap:2px; background:var(--border); padding:3px; border-radius:var(--radius-sm); margin-bottom:20px; }
+.tab-btn { flex:1; padding:10px 16px; border:none; background:transparent; cursor:pointer; font-size:.9rem; font-weight:600; border-radius:6px; transition:all .2s; color:var(--text-secondary); }
+.tab-btn.active { background:var(--card-bg); color:var(--accent); box-shadow:0 1px 2px rgba(0,0,0,.08); }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+/* Code Block */
+.code-block { background:#1e1e2e; color:#cdd6f4; border-radius:var(--radius-sm); padding:20px 24px; overflow-x:auto; font-family:var(--font-mono); font-size:.85rem; line-height:1.6; margin:16px 0; position:relative; }
+.code-block .comment { color:#6c7086; }
+.code-block .keyword { color:#cba6f7; }
+.code-block .string { color:#a6e3a1; }
+.code-block .func { color:#89b4fa; }
+.code-block .tag { color:#f38ba8; }
+.copy-btn { position:absolute; top:10px; right:12px; background:rgba(255,255,255,.1); border:none; color:#fff; padding:4px 12px; border-radius:4px; cursor:pointer; font-size:.75rem; opacity:.7; transition:opacity .2s; }
+.copy-btn:hover { opacity:1; }
+.copy-btn.copied { background:#10b981; }
+
+/* Agent vs Workflow visual */
+.mode-compare { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:24px 0; }
+.mode-card { background:var(--card-bg); border-radius:var(--radius); padding:28px; border:2px solid var(--border); }
+.mode-card.agent { border-color:var(--accent); }
+.mode-card.workflow { border-color:var(--accent2); }
+.mode-card h4 { font-size:1.1rem; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.mode-card .flow { background:var(--accent-light); border-radius:var(--radius-sm); padding:16px; font-family:var(--font-mono); font-size:.8rem; margin:12px 0; line-height:1.8; }
+.mode-card .flow .arrow { color:var(--accent); font-weight:700; }
+
+/* Flow Diagram */
+.flow-diagram { display:flex; flex-direction:column; align-items:center; gap:12px; margin:24px 0; }
+.flow-row { display:flex; align-items:center; gap:12px; }
+.flow-box { padding:12px 20px; border-radius:var(--radius-sm); font-weight:600; font-size:.9rem; }
+.flow-box.input { background:#eef2ff; color:#4f46e5; border:2px solid #c7d2fe; }
+.flow-box.process { background:#fef3c7; color:#92400e; border:2px solid #fde68a; }
+.flow-box.output { background:#d1fae5; color:#065f46; border:2px solid #a7f3d0; }
+.flow-box.agent { background:#ede9fe; color:#5b21b6; border:2px solid #c4b5fd; }
+.flow-arrow { color:var(--text-secondary); font-size:1.4rem; font-weight:700; }
+
+/* Accordion */
+.accordion { border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; }
+.accordion-item { border-bottom:1px solid var(--border); }
+.accordion-item:last-child { border-bottom:none; }
+.accordion-header { width:100%; background:none; border:none; padding:16px 20px; text-align:left; font-size:.95rem; font-weight:600; cursor:pointer; display:flex; justify-content:space-between; align-items:center; color:var(--text); }
+.accordion-header:hover { background:var(--accent-light); }
+.accordion-header .icon { transition:transform .25s; font-size:.7rem; }
+.accordion-item.open .accordion-header .icon { transform:rotate(180deg); }
+.accordion-body { max-height:0; overflow:hidden; transition:max-height .35s ease; }
+.accordion-item.open .accordion-body { max-height:2000px; }
+.accordion-body-inner { padding:4px 20px 20px; font-size:.9rem; color:var(--text-secondary); }
+
+/* Decision Matrix */
+.matrix { overflow-x:auto; margin:16px 0; }
+.matrix table { width:100%; border-collapse:collapse; font-size:.9rem; }
+.matrix th { background:var(--accent-light); color:var(--accent); padding:12px 16px; text-align:left; font-weight:600; }
+.matrix td { padding:12px 16px; border-bottom:1px solid var(--border); }
+.matrix tr:hover td { background:#fafafe; }
+
+/* Tip card */
+.tip { background:linear-gradient(135deg, #eef2ff, #faf5ff); border-left:4px solid var(--accent); padding:16px 20px; border-radius:0 var(--radius-sm) var(--radius-sm) 0; margin:16px 0; }
+.tip strong { color:var(--accent); }
+
+/* Checklist */
+.checklist { list-style:none; }
+.checklist li { padding:8px 0 8px 28px; position:relative; }
+.checklist li::before { content:'✓'; position:absolute; left:0; color:#10b981; font-weight:700; }
+
+/* SVG diagram containers */
+.diagram { background:var(--card-bg); border-radius:var(--radius); padding:24px; text-align:center; margin:24px 0; border:1px solid var(--border); }
+.diagram svg { max-width:100%; height:auto; }
+
+/* Footer */
+footer { text-align:center; padding:48px 24px; color:var(--text-secondary); font-size:.85rem; border-top:1px solid var(--border); margin-top:64px; }
+
+/* Responsive */
+@media(max-width:768px) {
+  .layers { grid-template-columns:1fr; }
+  .mode-compare { grid-template-columns:1fr; }
+  .spectrum { flex-direction:column; }
+  .spectrum-arrow { transform:rotate(90deg); }
+  nav.toc ol { columns:1; }
+}
+
+/* Back to top */
+.back-to-top { position:fixed; bottom:24px; right:24px; width:44px; height:44px; border-radius:50%; background:var(--accent); color:#fff; border:none; cursor:pointer; box-shadow:var(--shadow-lg); display:flex; align-items:center; justify-content:center; font-size:1.2rem; opacity:0; transform:translateY(20px); transition:all .3s; z-index:100; }
+.back-to-top.visible { opacity:1; transform:translateY(0); }
+
+/* Highlight animation */
+@keyframes highlight-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(79,70,229,.4); } 50% { box-shadow: 0 0 0 8px rgba(79,70,229,0); } }
+.highlight { animation: highlight-pulse 1.5s ease-in-out; }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<header class="hero">
+  <span class="badge">📋 组内分享 · AI 工程实践</span>
+  <h1>信息披露管理：提升 AI 编程效率的核心杠杆</h1>
+  <p>同一个 AI 模型，同样的能力，为什么有时改一行代码一气呵成，有时反而把不相干的模块全改了？核心差别不在于 AI 的智力，而在于它"看到"了什么样的信息结构。</p>
+</header>
+
+<!-- TOC -->
+<div class="container">
+<nav class="toc">
+  <h2>📑 目录</h2>
+  <ol>
+    <li><a href="#s1">信息分层模型 —— AI 的"已知"与"未知"</a></li>
+    <li><a href="#s2">信息披露的本质 —— 从抽象到具体的距离</a></li>
+    <li><a href="#s3">上下文管理 —— AI 工作内存的优化策略</a></li>
+    <li><a href="#s4">Agent vs Workflow —— 两种 AI 模式的信息观</a></li>
+    <li><a href="#s5-harness">Harness 与 Loop —— 自动化场景下的信息披露</a></li>
+    <li><a href="#s6-skill">Skill 与信息管理 —— AI 无法感知的信息注入</a></li>
+    <li><a href="#s5">新员工心智模型 —— 像带新人一样带 AI</a></li>
+    <li><a href="#s6">实战 Checklist —— 上手就能用的操作指南</a></li>
+    <li><a href="#s7">反模式速查 —— 常见的坑与修正方案</a></li>
+  </ol>
+</nav>
+</div>
+
+<!-- Section 1: 信息分层模型 -->
+<div class="container">
+<section id="s1">
+  <h2 class="section-title">1. 信息分层模型</h2>
+  <p class="section-subtitle">AI 在每次会话中拥有的信息，可以清晰地分成三层。理解这三层，是理解 AI 协作行为的基础。</p>
+
+  <div class="layers">
+    <div class="layer-card world">
+      <div class="layer-num">第一层</div>
+      <h4>🌍 世界知识</h4>
+      <span class="status full">AI 默认为满</span>
+      <p>编程通识、语言语法、主流框架、设计模式、网络协议 —— AI 在这里是顶级专家。Go 的 goroutine 调度、React Hooks 规则、RESTful API 设计，随问随答。</p>
+    </div>
+    <div class="layer-card team">
+      <div class="layer-num">第二层</div>
+      <h4>🏢 团队共识</h4>
+      <span class="status empty">AI 完全空白</span>
+      <p>项目架构边界、领域术语定义、命名规范、协作约定、历史决策。AI 不知道"订单"和"工单"的区别，不知道为什么 Service 不能调 Handler。</p>
+    </div>
+    <div class="layer-card demand">
+      <div class="layer-num">第三层</div>
+      <h4>📋 当前需求</h4>
+      <span class="status empty">AI 完全空白</span>
+      <p>本次任务的改动范围、验收标准、上下游影响、限制条件。AI 不知道这次只改 Provider 层，不知道验收标准是跑通 XXX 测试。</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px;">🔍 信息传递故障模型</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#ef4444"/></marker>
+          <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#10b981"/></marker>
+        </defs>
+        <!-- Flow -->
+        <rect x="10" y="60" width="140" height="80" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/>
+        <text x="80" y="95" text-anchor="middle" font-size="13" font-weight="600" fill="#4f46e5">信息源</text>
+        <text x="80" y="115" text-anchor="middle" font-size="11" fill="#6b7280">工程师的脑子</text>
+
+        <rect x="210" y="60" width="140" height="80" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="280" y="95" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">编码</text>
+        <text x="280" y="115" text-anchor="middle" font-size="11" fill="#6b7280">指令 + 文档</text>
+
+        <rect x="410" y="60" width="140" height="80" rx="10" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+        <text x="480" y="95" text-anchor="middle" font-size="13" font-weight="600" fill="#dc2626">信道</text>
+        <text x="480" y="115" text-anchor="middle" font-size="11" fill="#6b7280">上下文窗口</text>
+
+        <rect x="610" y="60" width="140" height="80" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+        <text x="680" y="95" text-anchor="middle" font-size="13" font-weight="600" fill="#065f46">解码</text>
+        <text x="680" y="115" text-anchor="middle" font-size="11" fill="#6b7280">AI 分析</text>
+
+        <rect x="770" y="60" width="110" height="80" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+        <text x="825" y="95" text-anchor="middle" font-size="13" font-weight="600" fill="#6d28d9">输出</text>
+        <text x="825" y="115" text-anchor="middle" font-size="11" fill="#6b7280">代码</text>
+
+        <!-- Arrows -->
+        <line x1="150" y1="100" x2="208" y2="100" stroke="#6b7280" stroke-width="2" marker-end="url(#arrowRed)"/>
+        <line x1="350" y1="100" x2="408" y2="100" stroke="#6b7280" stroke-width="2" marker-end="url(#arrowRed)"/>
+        <line x1="550" y1="100" x2="608" y2="100" stroke="#6b7280" stroke-width="2" marker-end="url(#arrowGreen)"/>
+        <line x1="750" y1="100" x2="768" y2="100" stroke="#6b7280" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+        <!-- Fault markers -->
+        <text x="160" y="45" text-anchor="middle" font-size="11" fill="#ef4444">⚠ 编码不足</text>
+        <text x="470" y="45" text-anchor="middle" font-size="11" fill="#ef4444">⚠ 信道过载</text>
+
+        <!-- Bottom note -->
+        <text x="450" y="185" text-anchor="middle" font-size="12" fill="#6b7280">信息丢失量巨大 ⬆ · 有效信号被淹没 ⬆</text>
+      </svg>
+    </div>
+    <p style="text-align:center;color:var(--text-secondary);font-size:.9rem;">优秀的 AI 协作 = <strong>信息编码优化</strong> + <strong>信道管理</strong>——选择性将团队共识和当前需求以 AI 可消费的形式送入上下文窗口。</p>
+  </div>
+
+  <div class="tip">
+    <strong>💡 核心认知：</strong>AI 带着第一层满载而来，但第二层和第三层完全是空的。工程师在协作中的核心角色，就是把第二层和第三层补给它。
+  </div>
+</section>
+
+<!-- Section 2: 信息披露的本质 -->
+<section id="s2">
+  <h2 class="section-title">2. 信息披露的本质</h2>
+  <p class="section-subtitle">信息从"一个人的脑子里"变成"团队和 AI 都能读取的文档"，经历了一个由模糊到清晰的四层光谱。</p>
+
+  <div class="spectrum">
+    <div class="spectrum-stage">
+      <div class="stage-label">🧠 潜意识</div>
+      <div class="stage-desc">连提出者自己都说不清<br>"这个页面体验还不够好"</div>
+    </div>
+    <div class="spectrum-arrow">→</div>
+    <div class="spectrum-stage">
+      <div class="stage-label">🤔 个人模糊掌握</div>
+      <div class="stage-desc">单人懂但表达不清<br>"把那个按钮置灰"</div>
+    </div>
+    <div class="spectrum-arrow">→</div>
+    <div class="spectrum-stage">
+      <div class="stage-label">💡 个人充分掌握</div>
+      <div class="stage-desc">想清楚了但没落文档<br>脑子里有完整画面</div>
+    </div>
+    <div class="spectrum-arrow">→</div>
+    <div class="spectrum-stage">
+      <div class="stage-label">📄 团队共识</div>
+      <div class="stage-desc">写进 PRD / CONTEXT.md<br>所有人一打开就能读</div>
+    </div>
+  </div>
+
+  <p style="text-align:center;color:var(--text-secondary);margin:8px 0 24px;">
+    ⬆ 绝大多数 AI 翻车，根因是需求停留在前两层就甩给 AI 了 ⬆
+  </p>
+
+  <div class="card">
+    <h3 style="margin-bottom:12px;">🐕 "狗"与"你家那只金毛"——抽象与具体的距离</h3>
+    <div class="matrix">
+      <table>
+        <thead><tr><th>抽象级别</th><th>类比</th><th>编程中的对应</th><th>AI 能交付吗？</th></tr></thead>
+        <tbody>
+          <tr><td>品种泛指</td><td>"帮我带只狗回来"</td><td>"改一下这个页面"</td><td>❌ 会交付一只"随机狗"</td></tr>
+          <tr><td>品种具体</td><td>"带一只金毛回来"</td><td>"把支付按钮置灰"</td><td>⚠️ 方向对了但细节不对</td></tr>
+          <tr><td>个体具体</td><td>"带邻居家叫 Lucky 的金毛"</td><td>"当余额不足时，支付按钮 disabled，token=--btn-disabled，hover 提示'余额不足'"</td><td>✅ 交付你想要的</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px;">📐 最小信息披露原则</h3>
+    <p style="margin-bottom:16px;">不是"把所有信息都告诉 AI"，而是"只告诉 AI 它不能自己推断出来的信息"。</p>
+    <div class="mode-compare">
+      <div style="background:#f0fdf4;border-radius:var(--radius-sm);padding:20px;">
+        <h4 style="color:#065f46;margin-bottom:10px;">✅ AI 自己能推断 → 不需要披露</h4>
+        <ul style="list-style:none;font-size:.9rem;color:var(--text-secondary);">
+          <li>✓ Go 标准库的用法</li>
+          <li>✓ 主流框架的常见用法</li>
+          <li>✓ 通用设计模式</li>
+          <li>✓ 编程语言语法</li>
+        </ul>
+      </div>
+      <div style="background:#fef2f2;border-radius:var(--radius-sm);padding:20px;">
+        <h4 style="color:#dc2626;margin-bottom:10px;">❌ AI 推断不出来 → 必须披露</h4>
+        <ul style="list-style:none;font-size:.9rem;color:var(--text-secondary);">
+          <li>✗ 项目特定的命名约定</li>
+          <li>✗ 项目特定的架构约束</li>
+          <li>✗ 项目特有的术语定义</li>
+          <li>✗ 本次需求的范围和限制</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>💡 一句话：</strong>信息说不清，AI 替你猜；猜对了是你运气好，猜错了是你 review 的工时。下次给 AI 派活前，问自己一句——它在什么地方需要猜？
+  </div>
+</section>
+
+<!-- Section 3: 上下文管理 -->
+<section id="s3">
+  <h2 class="section-title">3. 上下文管理 —— AI 的"工作内存"</h2>
+  <p class="section-subtitle">上下文窗口不是"能塞多少塞多少"的免费资源，而是要精打细算的稀缺品。</p>
+
+  <div class="card interactive">
+    <h3 style="margin-bottom:16px;">📊 上下文消耗模拟器</h3>
+    <p style="font-size:.9rem;color:var(--text-secondary);margin-bottom:16px;">拖动滑块，直观感受不同类型内容如何消耗上下文容量（模拟 200K Token 窗口）</p>
+    <div style="margin-bottom:20px;">
+      <label style="display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:6px;">
+        <span>日志文件（行）</span><span id="log-val">0</span>
+      </label>
+      <input type="range" id="log-slider" min="0" max="5000" value="0" step="100" style="width:100%;accent-color:#ef4444;">
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:6px;">
+        <span>源文件（个 × 500行）</span><span id="file-val">0</span>
+      </label>
+      <input type="range" id="file-slider" min="0" max="20" value="3" step="1" style="width:100%;accent-color:#f59e0b;">
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:6px;">
+        <span>对话轮次</span><span id="turn-val">5</span>
+      </label>
+      <input type="range" id="turn-slider" min="1" max="50" value="5" step="1" style="width:100%;accent-color:#0ea5e9;">
+    </div>
+    <div style="background:#f3f4f6;border-radius:var(--radius-sm);height:32px;overflow:hidden;position:relative;margin-bottom:8px;">
+      <div id="ctx-bar" style="height:100%;background:linear-gradient(90deg,#10b981,#f59e0b,#ef4444);border-radius:6px;transition:width .3s;width:15%;"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-secondary);">
+      <span>使用: <strong id="ctx-usage">30K</strong> / 200K tokens</span>
+      <span id="ctx-status" style="color:#10b981;font-weight:600;">安全</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-push">📥 主动塞 Push</button>
+    <button class="tab-btn" data-tab="tab-search">🔍 被动探索 Let Agent Search</button>
+    <button class="tab-btn" data-tab="tab-pull">🔗 按需取 Pull on Demand</button>
+    <button class="tab-btn" data-tab="tab-mix">⚡ 混合策略</button>
+  </div>
+  <div class="tab-panel active" id="tab-push">
+    <div class="card">
+      <h4>主动塞（Push）—— 精准控制开局</h4>
+      <p style="color:var(--text-secondary);margin:8px 0;">工程师直接把 PRD 核心段落 + 2-3 个主链路文件 + 本次明确的边界贴进对话。</p>
+      <p><strong>适用：</strong>对话开始时塞入核心上下文，锁定方向，AI 不需要在"我该看什么"上浪费 Token。</p>
+      <p style="color:#ef4444;"><strong>注意：</strong>只塞 2-3 个核心文件。塞多了反而稀释注意力，AI 在 10 个文件中迷失关键信息。</p>
+    </div>
+  </div>
+  <div class="tab-panel" id="tab-search">
+    <div class="card">
+      <h4>被动探索（Let Agent Search）—— 可控半径内自主推进</h4>
+      <p style="color:var(--text-secondary);margin:8px 0;">只说目标，让 Agent 自己去 grep、读文件、跑命令，自主搜集它认为需要的信息。</p>
+      <p><strong>适用：</strong>问题定位不明确时的第一轮诊断、跨多个未知文件的开放性问题。</p>
+      <p style="color:#ef4444;"><strong>注意：</strong>探索本身消耗 Token，可能读到过时文件、把无关模块当主线。</p>
+    </div>
+  </div>
+  <div class="tab-panel" id="tab-pull">
+    <div class="card">
+      <h4>按需取（Pull on Demand）—— MCP 动态拉取</h4>
+      <p style="color:var(--text-secondary);margin:8px 0;">通过 MCP（Model Context Protocol）等接口，让 AI 在需要时自己去拉取信息——API 文档、数据库 Schema、配置中心规则。</p>
+      <p><strong>适用：</strong>可能用到但不一定用的辅助信息，不预占上下文窗口，按需"付费"。</p>
+    </div>
+  </div>
+  <div class="tab-panel" id="tab-mix">
+    <div class="card">
+      <h4>⚡ 混合策略 —— 实战最佳配方</h4>
+      <div class="diagram">
+        <svg viewBox="0 0 800 220" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="20" width="220" height="80" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/>
+          <text x="130" y="55" text-anchor="middle" font-size="14" font-weight="700" fill="#4f46e5">① 主动塞 Push</text>
+          <text x="130" y="75" text-anchor="middle" font-size="11" fill="#6b7280">PRD + 2-3核心文件 + 边界</text>
+          <text x="130" y="90" text-anchor="middle" font-size="10" fill="#10b981">把方向定准</text>
+
+          <text x="270" y="65" font-size="22" fill="#6b7280">→</text>
+
+          <rect x="300" y="20" width="220" height="80" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+          <text x="410" y="55" text-anchor="middle" font-size="14" font-weight="700" fill="#92400e">② 被动探索</text>
+          <text x="410" y="75" text-anchor="middle" font-size="11" fill="#6b7280">Agent 在框定半径内自主推进</text>
+          <text x="410" y="90" text-anchor="middle" font-size="10" fill="#10b981">发挥自主性</text>
+
+          <text x="550" y="65" font-size="22" fill="#6b7280">→</text>
+
+          <rect x="580" y="20" width="200" height="80" rx="10" fill="#f0fdf4" stroke="#10b981" stroke-width="2"/>
+          <text x="680" y="55" text-anchor="middle" font-size="14" font-weight="700" fill="#065f46">③ 按需取 Pull</text>
+          <text x="680" y="75" text-anchor="middle" font-size="11" fill="#6b7280">遇到特定问题按需拉取</text>
+          <text x="680" y="90" text-anchor="middle" font-size="10" fill="#10b981">细节不预占内存</text>
+
+          <text x="400" y="140" text-anchor="middle" font-size="12" fill="#6b7280">设计思想：前期定准方向 → 中期安全半径自主跑 → 后期按需补细节</text>
+
+          <rect x="100" y="155" width="600" height="45" rx="8" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="400" y="183" text-anchor="middle" font-size="12" fill="#6d28d9">全程：CLAUDE.md / AGENTS.md 自动注入团队共识层</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 4: Agent vs Workflow -->
+<section id="s4">
+  <h2 class="section-title">4. Agent vs Workflow —— 两种 AI 模式的信息观</h2>
+  <p class="section-subtitle">Agent 和 Workflow 最本质的区别，不在于"谁更智能"，而在于<strong>对待信息缺失的态度</strong>——一个会主动去找，一个必须提前给全。</p>
+
+  <!-- 核心对比：信息披露视角 -->
+  <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,#fafafe,#eef2ff);">
+    <h3 style="margin-bottom:12px;">🔑 核心差异：信息缺失时，谁兜底？</h3>
+    <div class="mode-compare">
+      <div class="mode-card agent" style="background:#eef2ff;">
+        <h4 style="color:#4f46e5;">🤖 Agent 模式</h4>
+        <p style="font-size:1.1rem;font-weight:700;color:#4f46e5;margin:12px 0;">"信息不够？我自己去找。"</p>
+        <p style="font-size:.85rem;color:var(--text-secondary);">Agent 的设计哲学是 <strong>容忍信息缺口</strong>。你只需要给一个方向，缺失的信息由 AI 自主补充——它通过<strong>工具调用、文件检索、反问澄清</strong>三条路径去拉取未知信息。</p>
+        <div style="margin-top:12px;font-size:.8rem;">
+          <p>✅ 可以缺信息，缺了自己找</p>
+          <p>✅ 工程师不需要"全知"——想到什么说什么</p>
+          <p>✅ 适合现实世界：需求从来不是 100% 完整</p>
+        </div>
+      </div>
+      <div class="mode-card workflow" style="background:#f0f9ff;">
+        <h4 style="color:#0ea5e9;">⚙️ Workflow 模式</h4>
+        <p style="font-size:1.1rem;font-weight:700;color:#0ea5e9;margin:12px 0;">"信息不全？直接报错。"</p>
+        <p style="font-size:.85rem;color:var(--text-secondary);">Workflow 的设计哲学是 <strong>零容忍信息缺口</strong>。每一步的输入必须在编排阶段就定义清楚——缺少任何一个参数，<strong>步骤直接中断</strong>，没有"自己去补"这回事。</p>
+        <div style="margin-top:12px;font-size:.8rem;">
+          <p>❌ 一步不能缺，缺就报错</p>
+          <p>❌ 工程师必须预判所有信息需求</p>
+          <p>❌ 对"意外"零容忍——只能处理预定义分支</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agent 如何自主拉取信息 -->
+  <div class="card">
+    <h3 style="margin-bottom:20px;">🔍 Agent 的三条信息获取通道</h3>
+    <p style="color:var(--text-secondary);margin-bottom:20px;">当 Agent 发现自己缺少关键信息时，它不会"猜"，而是通过以下三种方式主动拉取——这就是信息披露效率的最大杠杆。</p>
+    <div class="diagram">
+      <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrBlue" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="#4f46e5"/></marker>
+          <marker id="arrGreen" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="#10b981"/></marker>
+        </defs>
+
+        <!-- Center: Agent Core -->
+        <ellipse cx="450" cy="150" rx="90" ry="90" fill="#eef2ff" stroke="#4f46e5" stroke-width="2.5"/>
+        <text x="450" y="140" text-anchor="middle" font-size="14" font-weight="700" fill="#4f46e5">Agent</text>
+        <text x="450" y="160" text-anchor="middle" font-size="11" fill="#6b7280">信息缺口</text>
+        <text x="450" y="178" text-anchor="middle" font-size="10" fill="#ef4444">检测 → 拉取</text>
+
+        <!-- Channel 1: 工具调用 -->
+        <rect x="30" y="50" width="190" height="70" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="125" y="78" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">📂 工具调用</text>
+        <text x="125" y="98" text-anchor="middle" font-size="10" fill="#6b7280">grep · read file · bash</text>
+        <text x="125" y="112" text-anchor="middle" font-size="10" fill="#6b7280">搜索代码库获取上下文</text>
+        <line x1="220" y1="85" x2="360" y2="130" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrBlue)"/>
+
+        <!-- Channel 2: 反问澄清 -->
+        <rect x="30" y="190" width="190" height="70" rx="10" fill="#f0fdf4" stroke="#10b981" stroke-width="2"/>
+        <text x="125" y="218" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">💬 反问澄清</text>
+        <text x="125" y="238" text-anchor="middle" font-size="10" fill="#6b7280">"这里的 X 是指 Y 还是 Z？"</text>
+        <text x="125" y="252" text-anchor="middle" font-size="10" fill="#6b7280">向工程师确认模糊信息</text>
+        <line x1="220" y1="225" x2="360" y2="175" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrGreen)"/>
+
+        <!-- Channel 3: 外部拉取 -->
+        <rect x="680" y="50" width="190" height="70" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+        <text x="775" y="78" text-anchor="middle" font-size="13" font-weight="700" fill="#6d28d9">🔗 外部拉取</text>
+        <text x="775" y="98" text-anchor="middle" font-size="10" fill="#6b7280">MCP · API 文档 · 配置中心</text>
+        <text x="775" y="112" text-anchor="middle" font-size="10" fill="#6b7280">按需获取外部知识库</text>
+        <line x1="680" y1="85" x2="540" y2="130" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrBlue)"/>
+
+        <!-- Channel 4: 文档注入 -->
+        <rect x="680" y="190" width="190" height="70" rx="10" fill="#fce7f3" stroke="#ec4899" stroke-width="2"/>
+        <text x="775" y="218" text-anchor="middle" font-size="13" font-weight="700" fill="#be185d">📄 文档注入</text>
+        <text x="775" y="238" text-anchor="middle" font-size="10" fill="#6b7280">CLAUDE.md · CONTEXT.md</text>
+        <text x="775" y="252" text-anchor="middle" font-size="10" fill="#6b7280">会话启动时自动加载</text>
+        <line x1="680" y1="225" x2="540" y2="175" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrGreen)"/>
+
+        <!-- Bottom: Result -->
+        <rect x="250" y="270" width="400" height="26" rx="13" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+        <text x="450" y="289" text-anchor="middle" font-size="11" fill="#1e40af" font-weight="600">信息缺口被填补 → Agent 继续执行 → 交付正确结果</text>
+      </svg>
+    </div>
+    <p style="text-align:center;color:var(--text-secondary);font-size:.85rem;margin-top:8px;">Agent 把"你必须在事前把信息给全"的负担，变成了"你给方向，我负责补齐"的协作模式。</p>
+  </div>
+
+  <!-- 对比 Workflow 的刚性 -->
+  <div class="card" style="border:2px solid var(--border);">
+    <h3 style="margin-bottom:16px;">⚡ 信息缺失的两种后果</h3>
+    <p style="color:var(--text-secondary);margin-bottom:16px;">同样的信息缺口，在 Agent 和 Workflow 中会产生截然不同的结果：</p>
+    <div class="matrix">
+      <table>
+        <thead><tr><th>场景</th><th style="color:#4f46e5;">Agent 模式的反应</th><th style="color:#0ea5e9;">Workflow 模式的反应</th></tr></thead>
+        <tbody>
+          <tr><td>工程师只说了"改一下订单模块"</td><td style="color:#4f46e5;">自动 grep "order"，找到相关文件，读代码理解结构，再定位改动点</td><td style="color:#ef4444;">报错：缺少"要改哪个文件"的输入参数</td></tr>
+          <tr><td>不知道某个配置项的合法值范围</td><td style="color:#4f46e5;">调用 MCP 查询配置中心，或反问工程师"这个值的范围是多少？"</td><td style="color:#ef4444;">报错：配置校验失败，参数超出合法范围</td></tr>
+          <tr><td>发现"订单"和"工单"两个概念可能混淆</td><td style="color:#4f46e5;">读 CONTEXT.md 确认定义，或反问"你指的是用户侧的订单还是系统侧的工单？"</td><td style="color:#ef4444;">不会发现——按预设流程盲走，交付错误结果</td></tr>
+          <tr><td>需要了解某个历史决策的背景</td><td style="color:#4f46e5;">搜索 ADR 存档，或读相关 PRD 文档了解上下文</td><td style="color:#ef4444;">不会尝试——只有预定义的输入，没有"历史决策"这个字段</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tip" style="margin-top:16px;">
+      <strong>💡 关键洞察：</strong>Agent 的"自主信息拉取"能力，意味着<strong>信息披露不需要完美</strong>——你不必在事前把一切可能用到的信息都准备好。Agent 会把"信息缺口"从<strong>阻塞点</strong>变成<strong>自动处理的中间步骤</strong>。而 Workflow 要求你必须在编排阶段就穷举所有信息——这在现实世界中几乎不可能做到。
+    </div>
+  </div>
+
+  <!-- 选型决策 -->
+  <div class="card interactive">
+    <h3 style="margin-bottom:12px;">🎯 从信息披露角度看选型</h3>
+    <p style="font-size:.9rem;color:var(--text-secondary);margin-bottom:16px;">核心问题不是"哪个更智能"，而是<strong>"你能否在事前穷举所有需要的信息"</strong>：</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+      <div style="background:#eef2ff;border-radius:var(--radius-sm);padding:20px;border:2px solid #c7d2fe;">
+        <h4 style="color:#4f46e5;margin-bottom:8px;">🤖 选 Agent 当...</h4>
+        <ul style="list-style:none;font-size:.85rem;color:var(--text-secondary);">
+          <li>✓ 你无法在事前穷举所有信息</li>
+          <li>✓ 信息需要跨文件、跨模块探索</li>
+          <li>✓ 需求可能在中途出现意外分支</li>
+          <li>✓ 需要 AI 主动反问、主动验证</li>
+          <li>✓ 任务是一次性的，不值得花时间编排</li>
+        </ul>
+      </div>
+      <div style="background:#f0f9ff;border-radius:var(--radius-sm);padding:20px;border:2px solid #bae6fd;">
+        <h4 style="color:#0ea5e9;margin-bottom:8px;">⚙️ 选 Workflow 当...</h4>
+        <ul style="list-style:none;font-size:.85rem;color:var(--text-secondary);">
+          <li>✓ 输入输出在事前完全确定</li>
+          <li>✓ 不需要任何"探索"或"判断"</li>
+          <li>✓ 需要定期、无人值守执行</li>
+          <li>✓ 每一环节需要审计追溯</li>
+          <li>✓ 对稳定性要求高于灵活性</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tip">
+      <strong>💡 选型口诀：</strong>信息能穷举的用 Workflow，信息有缺口的用 Agent。日常开发 95%+ 的需求天然带有信息缺口——这正是 Agent 的用武之地。
+    </div>
+  </div>
+
+  <!-- 实战对比 -->
+  <div class="card">
+    <h3 style="margin-bottom:16px;">📊 实战对比：同一个任务，两种模式的表现</h3>
+    <div class="matrix">
+      <table>
+        <thead><tr><th>维度</th><th style="color:#4f46e5;">Agent</th><th style="color:#0ea5e9;">Workflow</th></tr></thead>
+        <tbody>
+          <tr><td><strong>信息要求</strong></td><td style="color:#4f46e5;">可容忍缺口，自主补全</td><td style="color:#ef4444;">一步不能缺，缺就报错</td></tr>
+          <tr><td><strong>信息披露成本</strong></td><td style="color:#4f46e5;">低——给方向即可，不用穷举</td><td style="color:#ef4444;">高——必须预判并定义所有参数</td></tr>
+          <tr><td><strong>信息获取方式</strong></td><td style="color:#4f46e5;">工具调用 + 反问 + 外部拉取 + 文档注入</td><td style="color:#ef4444;">无——只能使用预设输入</td></tr>
+          <tr><td><strong>对工程师的要求</strong></td><td style="color:#4f46e5;">想到什么说什么，Agent 补剩下的</td><td style="color:#ef4444;">必须事前想清楚所有信息需求</td></tr>
+          <tr><td><strong>出错模式</strong></td><td style="color:#f59e0b;">可能走偏，但 Review 可发现</td><td style="color:#ef4444;">明确报错，但可能瞒报（盲走）</td></tr>
+          <tr><td><strong>适合任务</strong></td><td style="color:#4f46e5;">探索型、信息不完整、一次性</td><td style="color:#0ea5e9;">确定型、信息完整、可重复</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 工程支撑 -->
+  <div class="card">
+    <h3 style="margin-bottom:16px;">🏗️ 让 Agent 高效获取信息的四大工程支撑</h3>
+    <p style="color:var(--text-secondary);margin-bottom:16px;">Agent 的"自主获取信息"不是魔法，它依赖以下工程基础设施：</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+      <div style="background:#eef2ff;border-radius:var(--radius-sm);padding:16px;">
+        <strong>🛡️ Harness 安全围栏</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">给 Agent 装"安全围栏"——它能读哪些文件、能跑哪些命令、改代码前是否需要确认。信息获取在可控范围内。</p>
+      </div>
+      <div style="background:#fef3c7;border-radius:var(--radius-sm);padding:16px;">
+        <strong>📂 Git Worktree 隔离空间</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">每个 Agent 独立工作目录，互不干扰。Agent 可以放心探索，不会污染其他人的工作区。</p>
+      </div>
+      <div style="background:#f0fdf4;border-radius:var(--radius-sm);padding:16px;">
+        <strong>📋 Skill 系统 SOP</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">brainstorming → plans → execute → verify。告诉 Agent 什么时候该反问、什么时候该拉取、什么时候该验证。</p>
+      </div>
+      <div style="background:#f5f3ff;border-radius:var(--radius-sm);padding:16px;">
+        <strong>📚 文档中心 长期记忆</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">CLAUDE.md + CONTEXT.md + ADR + PRD。Agent 的信息获取不是从零开始——持久文档是它的"已知信息基线"。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 5: Harness 与 Loop -->
+<section id="s5-harness">
+  <h2 class="section-title">5. Harness 与 Loop —— 自动化场景下的信息披露</h2>
+  <p class="section-subtitle">当 AI 不再是你一句我一句的对话伙伴，而是被编排进自动化循环（Loop）中自主运转时，信息披露面临一个全新的挑战：<strong>没有人站在旁边随时纠正</strong>。Harness 和 Loop 如何协作，让 Agent 在无人值守时依然获得足够且正确的信息？</p>
+
+  <!-- 5.1 从对话到自动化：信息披露的范式跃迁 -->
+  <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,#fafafe,#eef2ff);">
+    <h3 style="margin-bottom:12px;">🔀 从对话到自动化：信息披露的范式跃迁</h3>
+    <p style="color:var(--text-secondary);margin-bottom:20px;">Prompt 工程、Context 工程和 Harness 工程并不是替代关系，而是<strong>层层嵌套、相互托举的共生体</strong>。Loop 工程站在四层架构的最顶端——它不关心单次对话的质量，而关心整个系统的自运行能力。信息披露模型也随之从"每次对话手动补"升级为"设计好规则，Loop 自动按规则补"。</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+        <!-- Background layers: 4-layer stack -->
+        <!-- Layer 1: Prompt (bottom) -->
+        <rect x="50" y="240" width="800" height="60" rx="10" fill="#fef2f2" stroke="#fca5a5" stroke-width="2"/>
+        <text x="450" y="268" text-anchor="middle" font-size="13" font-weight="700" fill="#dc2626">① Prompt 层 — "怎么问"：角色设定 · 输出格式 · Few-shot 示例</text>
+        <text x="450" y="285" text-anchor="middle" font-size="10" fill="#6b7280">解决：语义对齐 · 推理引导 · 格式约束 · 信息编码的第一步</text>
+
+        <!-- Layer 2: Context -->
+        <rect x="50" y="175" width="800" height="60" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+        <text x="450" y="203" text-anchor="middle" font-size="13" font-weight="700" fill="#ea580c">② Context 层 — "让 AI 看到什么"：RAG · 记忆管理 · 单事实源 · 上下文压缩</text>
+        <text x="450" y="220" text-anchor="middle" font-size="10" fill="#6b7280">解决：信息检索 · Token 分配 · 跨会话记忆 · 上下文窗口优化</text>
+
+        <!-- Layer 3: Harness -->
+        <rect x="50" y="110" width="800" height="60" rx="10" fill="#fefce8" stroke="#fde68a" stroke-width="2"/>
+        <text x="450" y="138" text-anchor="middle" font-size="13" font-weight="700" fill="#ca8a04">③ Harness 层 — "AI 在什么环境里工作"：工具沙箱 · 权限控制 · 验证闭环 · 子代理</text>
+        <text x="450" y="155" text-anchor="middle" font-size="10" fill="#6b7280">解决：边界约束 · 工具编排 · 反馈闭环 · 安全围栏</text>
+
+        <!-- Layer 4: Loop (top, highlighted) -->
+        <rect x="50" y="40" width="800" height="65" rx="12" fill="#eef2ff" stroke="#4f46e5" stroke-width="3"/>
+        <text x="450" y="68" text-anchor="middle" font-size="14" font-weight="800" fill="#4f46e5">④ Loop 层 — "AI 做完一步后怎么办"：自动发现 → 分发 → 检查 → 记录 → 下一轮</text>
+        <text x="450" y="86" text-anchor="middle" font-size="11" fill="#6b7280">解决：自动化运转 · 闭环验证 · 无人值守 · 持续改进 · 信息披露在此层<strong>从手动变为规则驱动</strong></text>
+
+        <!-- Vertical arrow on left showing nested relationship -->
+        <line x1="25" y1="305" x2="25" y2="25" stroke="#6b7280" stroke-width="2" stroke-dasharray="6,4"/>
+        <text x="18" y="170" text-anchor="middle" font-size="10" fill="#6b7280" transform="rotate(-90,18,170)">层层嵌套 相互托举</text>
+      </svg>
+    </div>
+
+    <div class="tip" style="margin-top:11px;">
+      <strong>💡 核心洞察：</strong>前三层的职责边界：<strong>Prompt</strong> 解决"如何对模型说清楚指令"，<strong>Context</strong> 解决"模型需要知道哪些背景"，<strong>Harness</strong> 解决"整个 AI 系统如何高可靠、可控地运转"。而 <strong>Loop</strong> 则把三者的信息流串成一个自驱动闭环——人不再逐条给信息，而是<strong>事先定义信息获取规则</strong>，Loop 在每一轮自动执行这些规则。
+    </div>
+  </div>
+
+  <!-- 5.2 Loop 的五阶段循环与信息披露节点 -->
+  <div class="card">
+    <h3 style="margin-bottom:20px;">🔄 Loop 五阶段循环：每个阶段的信息披露节点</h3>
+    <p style="color:var(--text-secondary);margin-bottom:20px;">每一个 AI 编码循环——无论是单 Agent 还是多 Agent——都遵循相同的五阶段循环，直到满足可验证的停止条件。每个阶段都有<strong>特定的信息披露关键动作</strong>：</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrLoop" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#4f46e5"/></marker>
+        </defs>
+
+        <!-- Phase 1: Discover -->
+        <rect x="60" y="20" width="350" height="80" rx="12" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/>
+        <text x="235" y="48" text-anchor="middle" font-size="15" font-weight="700" fill="#4f46e5">🔍 ① Discover（发现）</text>
+        <text x="235" y="68" text-anchor="middle" font-size="11" fill="#6b7280">信息披露动作：从外部状态读取"什么需要做"</text>
+        <text x="235" y="85" text-anchor="middle" font-size="10" fill="#6b7280">来源：CI 失败日志 · Issue 系统 · Git diff · 定时任务输出</text>
+
+        <text x="450" y="65" font-size="20" fill="#4f46e5">→</text>
+
+        <!-- Phase 2: Plan -->
+        <rect x="480" y="20" width="360" height="80" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="660" y="48" text-anchor="middle" font-size="15" font-weight="700" fill="#92400e">📋 ② Plan（计划）</text>
+        <text x="660" y="68" text-anchor="middle" font-size="11" fill="#6b7280">信息披露动作：拉取项目规范 + 历史决策确定怎么做</text>
+        <text x="660" y="85" text-anchor="middle" font-size="10" fill="#6b7280">来源：CLAUDE.md · Skills · ADR · CONTEXT.md</text>
+
+        <text x="450" y="145" font-size="20" fill="#f59e0b">↓</text>
+
+        <!-- Phase 3: Execute -->
+        <rect x="60" y="170" width="350" height="80" rx="12" fill="#f0fdf4" stroke="#10b981" stroke-width="2"/>
+        <text x="235" y="198" text-anchor="middle" font-size="15" font-weight="700" fill="#065f46">⚡ ③ Execute（执行）</text>
+        <text x="235" y="218" text-anchor="middle" font-size="11" fill="#6b7280">信息披露动作：在隔离 worktree 中精确获取目标代码</text>
+        <text x="235" y="235" text-anchor="middle" font-size="10" fill="#6b7280">机制：子代理 · 独立上下文窗口 · 工具白名单</text>
+
+        <text x="450" y="215" font-size="20" fill="#10b981">→</text>
+
+        <!-- Phase 4: Verify -->
+        <rect x="480" y="170" width="360" height="80" rx="12" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+        <text x="660" y="198" text-anchor="middle" font-size="15" font-weight="700" fill="#6d28d9">✅ ④ Verify（验证）</text>
+        <text x="660" y="218" text-anchor="middle" font-size="11" fill="#6b7280">信息披露动作：用不同模型做独立检查，杜绝"自评自"</text>
+        <text x="660" y="235" text-anchor="middle" font-size="10" fill="#6b7280">机制：独立的 Evaluator 子代理 · 高 reasoning 模型 · 不共享上下文</text>
+
+        <text x="450" y="295" font-size="20" fill="#7c3aed">↓</text>
+
+        <!-- Phase 5: Iterate -->
+        <rect x="200" y="320" width="500" height="70" rx="12" fill="#fdf2f8" stroke="#ec4899" stroke-width="2"/>
+        <text x="450" y="348" text-anchor="middle" font-size="15" font-weight="700" fill="#be185d">🔁 ⑤ Iterate（迭代）—— 状态存外部，不从上下文里猜</text>
+        <text x="450" y="368" text-anchor="middle" font-size="11" fill="#6b7280">信息披露动作：写入 STATE.md · 更新 Issue · 记录哪些成了哪些没成</text>
+        <text x="450" y="383" text-anchor="middle" font-size="10" fill="#6b7280">核心原则：模型会遗忘，仓库不会——所有状态存在外部系统，下轮循环从全新上下文开始</text>
+
+        <!-- Loop back arrow -->
+        <path d="M 200 355 L 50 355 L 50 60 L 58 60" stroke="#ec4899" stroke-width="2" fill="none" stroke-dasharray="8,4" marker-end="url(#arrLoop)"/>
+        <text x="38" y="210" font-size="10" fill="#be185d" transform="rotate(-90,38,210)">回到 Discover 重新开始</text>
+      </svg>
+    </div>
+
+    <div class="tip" style="margin-top:16px;">
+      <strong>💡 Loop 的核心哲学：</strong>不要信任模型的上下文窗口作为持久化存储。模型会遗忘、会漂移、压缩信息时会导致约束丢失。每个循环迭代都从一个<strong>全新的上下文窗口</strong>开始，但需要在实际持久化的内容（STATE.md、Issue 系统、Git 仓库）基础上工作。这就是为什么最原始的 Ralph Loop 只用了一行 <code>while :; do cat PROMPT.md | claude-code; done</code> 就实现了永续自动化——每次循环重新读取 PROMPT.md 和当前代码库状态，完全忽略之前的对话历史，反而解决了所有长对话上下文带来的问题。
+    </div>
+  </div>
+
+  <!-- 5.3 Harness：自动化场景的信息披露护栏 -->
+  <div class="card" style="border:2px solid var(--border);">
+    <h3 style="margin-bottom:20px;">🛡️ Harness：自动化场景的信息披露护栏</h3>
+    <p style="color:var(--text-secondary);margin-bottom:20px;">在 Loop 驱动的自动化场景中，Harness 承担了"确保 Agent 拿到正确信息、不会拿错信息、不乱用信息"的职责。Claude Code、Hermes Agent 和 OpenClaw 三条路线，对"如何在 Loop 中管理信息披露"给出了三种不同的答案。</p>
+
+    <div class="mode-compare" style="grid-template-columns:repeat(3,1fr);">
+      <div class="mode-card agent" style="background:#eef2ff;">
+        <h4 style="color:#4f46e5;">🔒 Claude Code：信任模型 + 管好边界</h4>
+        <p style="font-size:.85rem;color:var(--text-secondary);margin-top:8px;">信息披露哲学：<strong>模型自己能搞定的事就别替它做</strong>。Harness 不替模型做决策，只在两个地方卡住：有没有权限做这件事，上下文是不是快溢出了。</p>
+        <div style="margin-top:14px;font-size:.8rem;">
+          <p><strong>信息获取：</strong>CLAUDE.md 文件前缀加载 + Auto Memory（模型自己写 Markdown）</p>
+          <p><strong>权限管控：</strong>六种权限模式 · 只读工具自动放行 · 副作用工具每次检查</p>
+          <p><strong>上下文保护：</strong>反应式压缩 · fork 独立实例做摘要 · 3 次失败 circuit breaker</p>
+          <p><strong>Loop 中的信息流：</strong>每轮完整历史交给模型 · 工具执行结果流式返回</p>
+        </div>
+      </div>
+      <div class="mode-card workflow" style="background:#f0f9ff;">
+        <h4 style="color:#0ea5e9;">📚 Hermes：分层信息积累</h4>
+        <p style="font-size:.85rem;color:var(--text-secondary);margin-top:8px;">信息披露哲学：<strong>光给模型看到不够，得帮它在多个时间尺度上积累和召回</strong>。</p>
+        <div style="margin-top:14px;font-size:.8rem;">
+          <p><strong>五层记忆：</strong>MEMORY.md → SQLite+FTS5 全文搜索 → 8 个外部 memory provider</p>
+          <p><strong>渐进披露：</strong>Skills 分三级加载（名称→内容→附件），模型先扫描再深入</p>
+          <p><strong>程序性记忆：</strong>Agent 完成任务后把方法保存为技能文件，下次复用</p>
+          <p><strong>Loop 中的信息流：</strong>每轮前预取相关记忆 → 每轮后同步对话 → 会话结束抽取长期记忆</p>
+        </div>
+      </div>
+      <div class="mode-card" style="background:#f5f3ff;border-color:#7c3aed;">
+        <h4 style="color:#6d28d9;">🔌 OpenClaw：信息获取作为可插拔服务</h4>
+        <p style="font-size:.85rem;color:var(--text-secondary);margin-top:8px;">信息披露哲学：<strong>信息管理的需求会变，与其内置固定方案，不如把接口留好</strong>。</p>
+        <div style="margin-top:14px;font-size:.8rem;">
+          <p><strong>Context Engine：</strong>可替换运行时插件，四个生命周期点（ingest / assemble / compact / after turn）</p>
+          <p><strong>会话隔离：</strong>DM 共享 session · 群聊按 group 隔离 · cron 每次新 session</p>
+          <p><strong>多 Agent：</strong>每个 Agent 独立 workspace + auth profile + session store</p>
+          <p><strong>Loop 中的信息流：</strong>Gateway 统一协议 → 所有入口收敛到同一套会话管理和工具策略</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip" style="margin-top:20px;">
+      <strong>💡 "Harness 衰变定律"：</strong>Anthropic 的核心观察——<strong>模型原生能力 ∝ 1 / 所需 Harness 的复杂度</strong>。模型越强，需要的 Harness 越薄。这意味着信息披露设计应该<strong>为减法而设计</strong>：每个 Harness 组件都应该能被安全移除，而不是越堆越厚。模型能自主获取的信息，就不要写死在 Harness 里。把 Harness 收拢在两类长效场景中：① 绝对的合规与业务硬边界（金融风控、权限隔离、Human-in-the-loop）；② 外部环境的互操作系统（API 密钥、数据库连接、状态存储）。
+    </div>
+  </div>
+
+  <!-- 5.4 Loop 的六大核心要素与信息披露 -->
+  <div class="card">
+    <h3 style="margin-bottom:20px;">🧩 Loop 六大核心要素的信息披露设计</h3>
+    <p style="color:var(--text-secondary);margin-bottom:20px;">所有现代 AI 编码工具（Claude Code、Codex 等）都内置了 Loop Engineering 所需的六大核心要素。从信息披露的角度重新审视它们：</p>
+
+    <div class="matrix">
+      <table>
+        <thead><tr><th>要素</th><th>在信息披露中的角色</th><th>典型实践</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>⏰ Automations（自动化）</strong></td>
+            <td><strong>信息触发源</strong>：定义"什么时候该去发现问题"。没有 Automation，信息就躺在那里，Agent 不会主动去看。</td>
+            <td>定时运行 CI 失败分类、每日 issue 审查、每 2 小时检查性能回归。Claude Code: <code>/loop</code> 定时 + <code>/goal</code> 满足条件才停</td>
+          </tr>
+          <tr>
+            <td><strong>🌲 Worktrees（工作树）</strong></td>
+            <td><strong>信息隔离空间</strong>：每个 Agent 看到的是独立副本，互不污染。两个 Agent 并行时不共享文件视角，杜绝"A 改了 B 以为没改"的信息不一致。</td>
+            <td>每个任务独立 worktree + 独立分支，完成后清理。Codex 和 Claude Code 都原生支持 worktree 级别的隔离</td>
+          </tr>
+          <tr>
+            <td><strong>📦 Skills（技能）</strong></td>
+            <td><strong>信息复用机制</strong>：把"每次都要重新解释"的项目知识编码到磁盘上，Agent 按需读取。这是把"你在对话里贴的信息"变成"系统自动注入的信息"。</td>
+            <td>SKILL.md + 可选脚本 + 参考资料。Agent 发现任务匹配时自动调用对应 Skill。技能是<strong>意图的一次性编码</strong>，告别"intent debt"</td>
+          </tr>
+          <tr>
+            <td><strong>🔗 Connectors（连接器）</strong></td>
+            <td><strong>信息管道</strong>：让 Loop 能触及文件系统之外的信息源——Issue 系统、数据库、CI/CD、Slack。没有 Connectors，Loop 只能看代码，看不到"世界"。</td>
+            <td>基于 MCP 协议接入真实工具：GitHub Issues、Linear、Slack、PostgreSQL 等</td>
+          </tr>
+          <tr>
+            <td><strong>🤖 Sub-agents（子代理）</strong></td>
+            <td><strong>信息视角分离</strong>：让实现者和验证者看到<strong>不同的信息子集</strong>——实现者只拿到任务所需的文件，验证者拿到完整 spec + 验收标准 + 安全规则。这是对抗"自评自"的信息学策略。</td>
+            <td>Explore（快速搜索，用 Haiku）→ Implement（全功能）→ Verify（强模型 + 高 reasoning）。验证子代理不共享实现代理的上下文</td>
+          </tr>
+          <tr>
+            <td><strong>📝 State（状态）</strong></td>
+            <td><strong>信息持久化的脊梁</strong>：Loop 最核心的设计原则——<strong>所有状态存在外部，不在上下文窗口里</strong>。模型遗忘一切，但 STATE.md 记住一切。下轮循环从零开始读取。</td>
+            <td>STATE.md · tasks.json · GitHub Issues · SQLite。记录：已完成 / 进行中 / 尝试过但失败了 / 待处理</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip" style="margin-top:16px;">
+      <strong>💡 Skills 的信息披露经济学：</strong>Agent 每轮启动都是"冷启动"——它会用自信的猜测填补任何信息缺口。一个 Skill 就是把项目约定、编码规范、历史教训<strong>一次性写在外面</strong>，Agent 每次运行都读取，不再重新推导。没有 Skills，Loop 每轮循环都在从零重新推导项目知识；有了 Skills，信息在循环之间<strong>复利增长</strong>。Hermes 甚至进一步——Agent 完成任务后可以把方法保存为新 Skill，积累 20+ 自创技能后，同类任务速度提升 40%。
+    </div>
+  </div>
+
+  <!-- 5.5 闭环 vs 开环的信息披露差异 -->
+  <div class="card interactive">
+    <h3 style="margin-bottom:20px;">🔐 闭环 vs 开环：信息披露的安全边界</h3>
+    <p style="color:var(--text-secondary);margin-bottom:20px;">Loop 有两种基本类型，信息披露的要求截然不同：</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div style="background:#f0fdf4;border-radius:var(--radius);padding:24px;border:2px solid #a7f3d0;">
+        <h4 style="color:#065f46;margin-bottom:10px;font-size:1.1rem;">🔒 闭环（Closed Loop）</h4>
+        <p style="font-size:.85rem;color:var(--text-secondary);margin-bottom:14px;">有明确停止条件，Agent 在有限信息范围内运作。</p>
+        <p style="font-size:.8rem;color:var(--text-secondary);"><strong>信息披露要求：</strong></p>
+        <ul style="font-size:.8rem;color:var(--text-secondary);padding-left:18px;">
+          <li>明确的目标（Goal）：精确定义"完成"的样子</li>
+          <li>充足的上下文：VISION.md + ARCHITECTURE.md + RULES.md</li>
+          <li>受限的动作：只暴露必要工具，不给多余权限</li>
+          <li>客观的反馈：测试、lint、类型检查的自动结果</li>
+          <li>清晰的停止条件：可验证的成功标准</li>
+        </ul>
+        <p style="font-size:.8rem;color:#065f46;margin-top:10px;"><strong>适合：</strong>CI 修复、代码审查、测试生成等边界明确的任务</p>
+      </div>
+      <div style="background:#fef2f2;border-radius:var(--radius);padding:24px;border:2px solid #fecaca;">
+        <h4 style="color:#dc2626;margin-bottom:10px;font-size:1.1rem;">🔓 开环（Open Loop）</h4>
+        <p style="font-size:.85rem;color:var(--text-secondary);margin-bottom:14px;">持续运行，没有预设终点。需要人类介入来控制信息披露边界。</p>
+        <p style="font-size:.8rem;color:var(--text-secondary);"><strong>信息披露要求：</strong></p>
+        <ul style="font-size:.8rem;color:var(--text-secondary);padding-left:18px;">
+          <li>人类审查机制（Human-in-the-loop）：关键节点必须人类确认</li>
+          <li>自动分类 TRIAGE：完成/需审查/放弃——区分不同信息可靠度</li>
+          <li>成本上限硬约束：max-iterations + 预算封顶</li>
+          <li>优先级排序：从问题严重性决定"先看哪个信息"</li>
+          <li>异常检测：如果输出质量偏离基线，自动降级到闭环</li>
+        </ul>
+        <p style="font-size:.8rem;color:#dc2626;margin-top:10px;"><strong>注意：</strong>开环的风险极高，中等代码库 50-100 次迭代可烧 ¥500-1000。建议从闭环开始。</p>
+      </div>
+    </div>
+
+    <div class="tip" style="margin-top:18px;background:linear-gradient(135deg,#fff7ed,#fef2f2);border-left-color:#dc2626;">
+      <strong>🔌 熔断机制（Circuit Breaker）—— 开环的最后一道信息护栏：</strong>无人值守的 Loop 必须有硬性停止条件，否则一个陷入"反复尝试同一个错误修复"的 Agent 会悄悄烧光预算。生产级参数参考：<strong>最大迭代 15–25 步 · 单轮超时 ~300 秒 · 单次成本预算 ~$2</strong>。一个实用技巧——<strong>对每轮迭代的动作取哈希指纹，连续 3 次相同立即停止</strong>（指纹重复说明 Agent 已陷入死循环，再喂信息也无济于事）。从信息披露视角看，这是一条"负向边界"：当 Agent 不再产生<strong>新信息</strong>时，及时切断比继续供给信息更重要。Anthropic 的研究员有句话点破本质——<em>"Rubric design is the skill now, the model is the easy part."</em>（设计可验证的成功/停止标准，才是今天真正的工程能力。）
+    </div>
+
+    <div class="tip" style="margin-top:18px;">
+      <strong>💡 闭环五要素的信息披露视角：</strong>闭环之所以"闭"，不是因为 Agent 不获取信息，而是因为<strong>信息获取的范围是预先划定好的</strong>——它知道自己该看什么文件、不该看什么文件、什么工具可用、什么操作被禁。这种"受限的信息自由"正是 Harness 设计的精髓：不是让 Agent 什么都知道，而是让它在<strong>知道得足够的前提下，不乱知道不该知道的</strong>。
+    </div>
+  </div>
+
+  <!-- 5.6 实战示例 -->
+  <div class="card">
+    <h3 style="margin-bottom:20px;">📐 实战：一个 CI 自动修复 Loop 的信息披露设计</h3>
+    <p style="color:var(--text-secondary);margin-bottom:16px;">以"每天早上自动修复前一天 CI 失败"为例，拆解每个环节的信息披露设计：</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrDark" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="#374151"/></marker>
+        </defs>
+
+        <!-- Step 1 -->
+        <rect x="20" y="20" width="200" height="90" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/>
+        <text x="120" y="45" text-anchor="middle" font-size="12" font-weight="700" fill="#4f46e5">⏰ 6:00 AM 触发</text>
+        <text x="120" y="65" text-anchor="middle" font-size="10" fill="#6b7280">GitHub Actions 定时</text>
+        <text x="120" y="80" text-anchor="middle" font-size="10" fill="#6b7280">ci-fix-loop.yml</text>
+        <text x="120" y="95" text-anchor="middle" font-size="9" fill="#ef4444">信息披露：触发源</text>
+
+        <line x1="220" y1="65" x2="265" y2="65" stroke="#374151" stroke-width="1.5" marker-end="url(#arrDark)"/>
+
+        <!-- Step 2 -->
+        <rect x="270" y="20" width="200" height="90" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="370" y="45" text-anchor="middle" font-size="12" font-weight="700" fill="#92400e">🔍 读取 CI 失败日志</text>
+        <text x="370" y="65" text-anchor="middle" font-size="10" fill="#6b7280">ci-triage Skill 分析</text>
+        <text x="370" y="80" text-anchor="middle" font-size="10" fill="#6b7280">分类：可自动修复 / 需人工</text>
+        <text x="370" y="95" text-anchor="middle" font-size="9" fill="#ef4444">信息披露：信息源筛选</text>
+
+        <line x1="470" y1="65" x2="515" y2="65" stroke="#374151" stroke-width="1.5" marker-end="url(#arrDark)"/>
+
+        <!-- Step 3 -->
+        <rect x="520" y="20" width="360" height="90" rx="10" fill="#f0fdf4" stroke="#10b981" stroke-width="2"/>
+        <text x="700" y="45" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">🤖 子代理修复 + 审查</text>
+        <text x="700" y="65" text-anchor="middle" font-size="10" fill="#6b7280">ci-fixer（实现）→ code-reviewer（验证）</text>
+        <text x="700" y="80" text-anchor="middle" font-size="10" fill="#6b7280">独立 worktree · 不同模型 · 隔离上下文</text>
+        <text x="700" y="95" text-anchor="middle" font-size="9" fill="#ef4444">信息披露：信息视角分离</text>
+
+        <line x1="700" y1="110" x2="700" y2="145" stroke="#374151" stroke-width="1.5" marker-end="url(#arrDark)"/>
+
+        <!-- Step 4 -->
+        <rect x="520" y="150" width="360" height="70" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+        <text x="700" y="175" text-anchor="middle" font-size="12" font-weight="700" fill="#6d28d9">📊 写入状态 + 打开 PR</text>
+        <text x="700" y="195" text-anchor="middle" font-size="10" fill="#6b7280">STATE.md · GitHub PR · Issue 更新</text>
+        <text x="700" y="210" text-anchor="middle" font-size="9" fill="#ef4444">信息披露：持久化 + 人类可审</text>
+
+        <line x1="520" y1="185" x2="485" y2="185" stroke="#374151" stroke-width="1.5" marker-end="url(#arrDark)"/>
+
+        <!-- Step 5 -->
+        <rect x="270" y="150" width="200" height="70" rx="10" fill="#fdf2f8" stroke="#ec4899" stroke-width="2"/>
+        <text x="370" y="175" text-anchor="middle" font-size="12" font-weight="700" fill="#be185d">👤 需人工审查</text>
+        <text x="370" y="195" text-anchor="middle" font-size="10" fill="#6b7280">复杂问题 → 人工介入</text>
+        <text x="370" y="210" text-anchor="middle" font-size="9" fill="#ef4444">信息披露：人机边界</text>
+
+        <line x1="270" y1="185" x2="225" y2="185" stroke="#374151" stroke-width="1.5" marker-end="url(#arrDark)"/>
+
+        <!-- Step 6: next day -->
+        <rect x="20" y="150" width="200" height="70" rx="10" fill="#f9fafb" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="120" y="175" text-anchor="middle" font-size="11" font-weight="700" fill="#6b7280">🔁 次日 6:00</text>
+        <text x="120" y="195" text-anchor="middle" font-size="10" fill="#6b7280">读取 STATE.md</text>
+        <text x="120" y="210" text-anchor="middle" font-size="10" fill="#6b7280">从上次中断处继续</text>
+
+        <!-- Bottom: STATE.md spine -->
+        <rect x="30" y="260" width="840" height="60" rx="8" fill="#1e1e2e"/>
+        <text x="450" y="282" text-anchor="middle" font-size="12" font-weight="700" fill="#cba6f7">📝 STATE.md — 信息持久化的脊梁</text>
+        <text x="450" y="302" text-anchor="middle" font-size="11" fill="#a6e3a1">[已完成] 修复 #123 · [进行中] 修复 #124: 尝试1失败, 尝试2数据库连接检查 · [待处理] 添加 auth 模块测试</text>
+      </svg>
+    </div>
+
+    <p style="text-align:center;color:var(--text-secondary);font-size:.85rem;margin-top:8px;">这个 Loop 的信息披露设计核心：<strong>每个环节都知道"该从哪里取信息、该把信息写到哪里"——不是靠记忆，而是靠外部化规则。</strong></p>
+  </div>
+
+  <!-- 5.7 总结 -->
+  <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,#fafafe,#f5f3ff);">
+    <h3 style="margin-bottom:16px;">🎯 Harness + Loop 信息披露设计原则总结</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
+      <div style="background:#eef2ff;border-radius:var(--radius-sm);padding:18px;">
+        <strong>📌 原则 1：状态必须外部化</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">模型会遗忘，上下文会压缩。所有 Loop 状态（完成/进行中/失败）写入 STATE.md 或 Issue 系统，不在上下文窗口中靠记忆。</p>
+      </div>
+      <div style="background:#fef3c7;border-radius:var(--radius-sm);padding:18px;">
+        <strong>📌 原则 2：信息视角必须分离</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">实现者看到"怎么做"的信息，验证者看到"对不对"的信息。用 Sub-agent + 不同模型 + 独立上下文来强制执行这种分离。</p>
+      </div>
+      <div style="background:#f0fdf4;border-radius:var(--radius-sm);padding:18px;">
+        <strong>📌 原则 3：Skills 是信息的一次性编码</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">不要在每个 Loop 迭代中重新解释项目约定。把约定写成 Skill，让 Agent 按需加载——信息在迭代间<strong>复利增长</strong>。</p>
+      </div>
+      <div style="background:#f5f3ff;border-radius:var(--radius-sm);padding:18px;">
+        <strong>📌 原则 4：Harness 为减法而设计</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">模型在进步，今天需要的硬编码约束明天可能是死代码。只把"绝对的合规硬边界"和"外部环境连接器"写死在 Harness 里。</p>
+      </div>
+      <div style="background:#fdf2f8;border-radius:var(--radius-sm);padding:18px;">
+        <strong>📌 原则 5：从闭环开始，谨慎开环</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">闭环有明确信息边界——Agent 知道自己该看什么。开环的信息获取是无限度的，必须有成本上限、迭代限制和人工审查节点。</p>
+      </div>
+      <div style="background:#fff7ed;border-radius:var(--radius-sm);padding:18px;">
+        <strong>📌 原则 6：Connectors 让 Loop 看到"世界"</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">没有 MCP Connectors，Loop 只能看到代码文件系统。接入 Issue 系统、CI/CD、Slack，Loop 才能实现"发现问题→修复→PR→通知"全闭环。</p>
+      </div>
+    </div>
+
+    <div class="tip" style="margin-top:16px;">
+      <strong>💡 终局洞察：人类掌舵，Agent 执行。</strong>Loop + Harness 的信息披露设计，本质上就是把"人类每次给 AI 补信息"这件事，从<strong>手动操作</strong>变成<strong>系统规则</strong>。你的角色从"每次对话的信息搬运工"升级为"信息获取规则的设计者"——这是一次根本性的工作方式升维。正如 Claude Code 负责人所说：<em>"I don't prompt Claude anymore. I have loops running that prompt Claude and figuring out what to do. My job is to write loops."</em>
+    </div>
+  </div>
+
+</section>
+
+<!-- Section 6: Skill 与信息管理 —— 将 AI 无法感知的信息注入上下文 -->
+<section id="s6-skill">
+  <h2 class="section-title">6. Skill 与信息管理 —— 将 AI 无法感知的信息注入上下文</h2>
+  <p class="section-subtitle">如果说 Prompt 是"每次对话时告诉 AI 的话"，Context 是"让 AI 在工作过程中看到的东西"，那么 <strong>Skill 就是"AI 主动加载到上下文中的、写死在磁盘上的项目知识"</strong>。它是信息披露从"手动逐条给"迈向"系统自动注入"的关键一步。</p>
+
+  <!-- 6.1 为什么需要 Skill：信息感知的鸿沟 -->
+  <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,#fafafe,#eef2ff);">
+    <h3 style="margin-bottom:16px;">🧠 AI 的信息感知边界</h3>
+    <p style="color:var(--text-secondary);margin-bottom:16px;">AI 模型有一个根本性的约束：<strong>它只能"看到"你放进上下文窗口的东西</strong>。模型不会主动知道你的项目用了什么框架、你们的 Git 分支命名规范是什么、团队最近做了什么架构决策——除非有人（或某个机制）把这些信息<strong>编码成文本，塞进它的上下文中</strong>。</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px;">
+      <div style="background:#fef2f2;border-radius:var(--radius-sm);padding:20px;border:2px solid #fecaca;">
+        <h4 style="color:#dc2626;margin-bottom:8px;">❌ 没有 Skill 的 AI 协作</h4>
+        <ul style="font-size:.85rem;color:var(--text-secondary);padding-left:18px;">
+          <li>每次对话都要重新解释项目背景</li>
+          <li>规范依赖人的记忆——"我刚才说了用 Vitest 吗？"</li>
+          <li>Agent 拿"通用最佳实践"代替"团队约定"</li>
+          <li>换一个人、换一个会话，知识归零</li>
+          <li>Loop 每轮迭代从零推导项目规则</li>
+        </ul>
+      </div>
+      <div style="background:#f0fdf4;border-radius:var(--radius-sm);padding:20px;border:2px solid #a7f3d0;">
+        <h4 style="color:#065f46;margin-bottom:8px;">✅ 有 Skill 的 AI 协作</h4>
+        <ul style="font-size:.85rem;color:var(--text-secondary);padding-left:18px;">
+          <li>项目知识一次编写，所有会话自动加载</li>
+          <li>Skill 文件即"团队意志的持久化文本"</li>
+          <li>Agent 按任务意图自动匹配对应 Skill</li>
+          <li>新人入职 = 一套 Skill 集合 = 团队最佳实践</li>
+          <li>Loop 每轮按需注入 Skill，信息在迭代间复利增长</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tip" style="margin-top:16px;">
+      <strong>💡 核心洞察：</strong>Skill 的本质是<strong>信息披露的自动化编码</strong>。它把"每次对话时你要手动贴给 AI 的项目知识"变成了"AI 在看到任务时自己去磁盘上找出来读的东西"。在这个意义上，Skill 不是"让 AI 变聪明"，而是<strong>让 AI 能"看到"它本来不可能知道的东西</strong>。
+    </div>
+  </div>
+
+  <!-- 6.2 Skill 的信息注入机制：渐进式加载 -->
+  <div class="card">
+    <h3 style="margin-bottom:16px;">📥 Skill 的三级信息加载机制</h3>
+    <p style="color:var(--text-secondary);margin-bottom:16px;">高效的信息披露不是"把一切塞进去"，而是<strong>按需逐步展开</strong>。现代 Skill 系统采用三级渐进式加载，在"告诉 AI 足够多"和"不浪费 Token"之间取得平衡：</p>
+
+    <div style="display:flex;gap:16px;margin-bottom:16px;">
+      <div style="flex:1;background:#eef2ff;border-radius:var(--radius-sm);padding:18px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:4px;">📛</div>
+        <strong style="display:block;margin-bottom:6px;">第一级：名称 + 描述</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);">Agent 启动时加载所有 Skill 的名称和一句话描述。Token 成本极低，但让 Agent 知道"有哪些知识可用"。</p>
+      </div>
+      <div style="flex:1;background:#fef3c7;border-radius:var(--radius-sm);padding:18px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:4px;">📄</div>
+        <strong style="display:block;margin-bottom:6px;">第二级：SKILL.md 正文</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);">Agent 判断任务匹配某 Skill 后，<strong>按需</strong>读取完整指令。包含流程、约束、示例——仅在"匹配时"消耗 Token。</p>
+      </div>
+      <div style="flex:1;background:#f0fdf4;border-radius:var(--radius-sm);padding:18px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:4px;">📦</div>
+        <strong style="display:block;margin-bottom:6px;">第三级：附带资源</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);">脚本、模板、参考文档。仅在 Skill 被激活后，由 Agent 按需读取——不做预加载。</p>
+      </div>
+    </div>
+
+    <div class="tip" style="margin-top:8px;">
+      <strong>💡 信息经济学视角：</strong>这三级加载实现了 <strong>"按需付费"的信息消费模型</strong>。第一级全量索引（~50 tokens/Skill），第二级匹配加载（~500-2000 tokens），第三级极少数场景才触发。对比"把项目文档全塞进上下文"加 20000+ tokens，渐进加载在信息覆盖和信息成本之间找到了最优解。
+    </div>
+  </div>
+
+  <!-- 6.3 以 Superpowers 为例：信息注入的工程实现 -->
+  <div class="card interactive" style="border:2px solid var(--accent2);background:linear-gradient(135deg,#f0f9ff,#eef2ff);">
+    <h3 style="margin-bottom:16px;">🔬 案例：Superpowers —— 将 TDD 流程注入 Agent 上下文</h3>
+    <p style="color:var(--text-secondary);margin-bottom:20px;">以 <strong>superpowers</strong> 这个开源 Skill 集合为例，展示一个完整的 Skill 是如何将"AI 本不可能知道的工作流程"<strong>编码成可分发的文本</strong>，并注入到 Agent 上下文中的：</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg">
+        <!-- Left: What AI doesn't know -->
+        <rect x="15" y="15" width="270" height="150" rx="10" fill="#fef2f2" stroke="#fca5a5" stroke-width="2"/>
+        <text x="150" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626">AI 无法感知的信息</text>
+        <text x="150" y="60" text-anchor="middle" font-size="10" fill="#6b7280">• TDD 红-绿-重构循环节奏</text>
+        <text x="150" y="78" text-anchor="middle" font-size="10" fill="#6b7280">• 先写 failing test 再写实现</text>
+        <text x="150" y="96" text-anchor="middle" font-size="10" fill="#6b7280">• 小步提交、频繁验证</text>
+        <text x="150" y="114" text-anchor="middle" font-size="10" fill="#6b7280">• 团队特有的测试工具链</text>
+        <text x="150" y="132" text-anchor="middle" font-size="10" fill="#6b7280">• 验收标准模板和检查清单</text>
+
+        <!-- Arrow: Skill encodes -->
+        <text x="310" y="60" font-size="28" fill="#4f46e5">→</text>
+        <text x="295" y="95" font-size="10" fill="#4f46e5" font-weight="600">Skill</text>
+        <text x="280" y="110" font-size="10" fill="#6b7280">编码为文本</text>
+
+        <!-- Center: Skill file structure -->
+        <rect x="330" y="15" width="240" height="150" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/>
+        <text x="450" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#4f46e5">SKILL.md</text>
+        <text x="450" y="60" text-anchor="middle" font-size="10" fill="#6b7280">---</text>
+        <text x="450" y="78" text-anchor="middle" font-size="10" fill="#6b7280">name: tdd</text>
+        <text x="450" y="96" text-anchor="middle" font-size="10" fill="#6b7280">description: |</text>
+        <text x="450" y="114" text-anchor="middle" font-size="10" fill="#6b7280">Test-driven development</text>
+        <text x="450" y="132" text-anchor="middle" font-size="10" fill="#6b7280">红-绿-重构循环...</text>
+
+        <!-- Arrow: injected into context -->
+        <text x="590" y="60" font-size="28" fill="#10b981">→</text>
+        <text x="575" y="95" font-size="10" fill="#10b981" font-weight="600">上下文</text>
+        <text x="580" y="110" font-size="10" fill="#6b7280">自动注入</text>
+
+        <!-- Right: Agent with context -->
+        <rect x="625" y="15" width="260" height="150" rx="10" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+        <text x="755" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">Agent 看到的上下文</text>
+        <text x="755" y="60" text-anchor="middle" font-size="10" fill="#6b7280">System: 你是编程助手</text>
+        <text x="755" y="78" text-anchor="middle" font-size="10" fill="#6b7280">User: 用 TDD 添加功能</text>
+        <text x="755" y="96" text-anchor="middle" font-size="10" fill="#4f46e5" font-weight="600">Skill(tdd): 流程如下...</text>
+        <text x="755" y="114" text-anchor="middle" font-size="10" fill="#6b7280">1. 写失败测试</text>
+        <text x="755" y="132" text-anchor="middle" font-size="10" fill="#6b7280">2. 最小实现通过测试</text>
+
+        <!-- Bottom: the result -->
+        <rect x="130" y="195" width="640" height="120" rx="10" fill="#f8f9fb" stroke="#9ca3af" stroke-width="1.5"/>
+        <text x="450" y="222" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a2e">执行效果对比</text>
+
+        <rect x="150" y="240" width="280" height="60" rx="6" fill="#fef2f2"/>
+        <text x="290" y="262" text-anchor="middle" font-size="10" font-weight="600" fill="#dc2626">无 Skill：Agent 自由发挥</text>
+        <text x="290" y="278" text-anchor="middle" font-size="9" fill="#6b7280">跳过测试 → 写实现 → 后补测试 → 逻辑耦合</text>
+        <text x="290" y="293" text-anchor="middle" font-size="9" fill="#6b7280">Agent 的"最佳实践猜测" ≠ 团队的 TDD 规范</text>
+
+        <rect x="455" y="240" width="280" height="60" rx="6" fill="#f0fdf4"/>
+        <text x="595" y="262" text-anchor="middle" font-size="10" font-weight="600" fill="#065f46">有 Skill：Agent 严格遵循流程</text>
+        <text x="595" y="278" text-anchor="middle" font-size="9" fill="#6b7280">写测试 → 跑测试(红) → 最小实现 → 跑测试(绿) → 重构</text>
+        <text x="595" y="293" text-anchor="middle" font-size="9" fill="#6b7280">Skill 文本 = 团队开发规范的精确副本</text>
+      </svg>
+    </div>
+
+    <div class="tip" style="margin-top:16px;">
+      <strong>💡 信息管理的本质在此刻显形：</strong>Superpowers 的 TDD Skill 不是"让 AI 学会 TDD"——AI 模型本身就知道 TDD 是什么。它的价值在于 <strong>将团队特定的 TDD 工作流、工具选择（Vitest vs Jest）、命名约定、验收标准——这些 AI 完全不知道的信息——编码成一个可自动加载的文本文件</strong>。Agent 读到 "使用 Vitest，test 文件放在 __tests__ 目录，命名格式 *.test.ts" 这些约束后，其行为就从"通用 AI"变成了"你们团队的 AI"。
+    </div>
+  </div>
+
+  <!-- 6.4 Skill 作为信息复利工具 -->
+  <div class="card">
+    <h3 style="margin-bottom:16px;">📈 Skill 的信息复利效应</h3>
+    <p style="color:var(--text-secondary);margin-bottom:16px;">Skill 的价值不是线性的——它在时间维度上产生<strong>信息复利</strong>。每一次使用 Skill，都是对团队知识的强化而非重新推导：</p>
+
+    <div class="matrix">
+      <table>
+        <thead><tr><th>维度</th><th>无 Skill</th><th>有 Skill</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>会话启动成本</strong></td>
+            <td>每次对话都要解释项目背景、规范、工具链</td>
+            <td>Skill 名称索引自动加载，匹配后按需展开完整指令</td>
+          </tr>
+          <tr>
+            <td><strong>Loop 迭代效率</strong></td>
+            <td>每轮从零推导项目规则，消耗 Token 做重复推理</td>
+            <td>每轮注入 Skill，规则变成"已知"而非"待推理"</td>
+          </tr>
+          <tr>
+            <td><strong>知识沉淀</strong></td>
+            <td>依赖人的记忆和口头传授，离职即流失</td>
+            <td>Skill 文件即知识库，Git 版本控制，团队共享</td>
+          </tr>
+          <tr>
+            <td><strong>Agent 行为一致性</strong></td>
+            <td>不同会话、不同人的 Agent 行为差异大</td>
+            <td>同一 Skill 约束下，Agent 行为模式高度一致</td>
+          </tr>
+          <tr>
+            <td><strong>自我进化能力</strong></td>
+            <td>每次踩坑后靠人更新文档（大概率忘记）</td>
+            <td>Agent 完成任务后可把方法保存为新 Skill（如 Hermes 的程序性记忆）</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip" style="margin-top:16px;">
+      <strong>💡 信息复利的工程隐喻：</strong>无 Skill 场景下，Agent 每轮 Loop 迭代都在<strong>重新交学费</strong>——它不知道上次怎么失败的、不知道团队用什么工具、不知道哪些文件不能改。Skill 把"学费"交一次，写成文本，然后所有未来会话和 Loop 迭代共享这份知识。Hermes 实测数据：Agent 积累 20+ 自创 Skill 后，同类任务速度提升 <strong>40%</strong>。
+    </div>
+  </div>
+
+  <!-- 6.5 模型进化后：流程 Skill 的弱化 -->
+  <div class="card interactive" style="border:2px solid var(--accent3);background:linear-gradient(135deg,#fffbf0,#fef3c7);">
+    <h3 style="margin-bottom:16px;">🔮 展望：模型进化后，流程 Skill 的角色会如何变化？</h3>
+    <p style="color:var(--text-secondary);margin-bottom:16px;">一个值得正视的判断：<strong>随着模型原生能力的提升，今天很多"流程型 Skill"的边际价值必然会下降</strong>。这不是 Skill 体系的缺陷——恰恰说明 Skill 是当下模型能力边界的"补丁"，而补丁终究会随着模型进化而被吸收。</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px;">
+      <div style="background:#fef3c7;border-radius:var(--radius-sm);padding:20px;border:2px solid #fde68a;">
+        <h4 style="color:#92400e;margin-bottom:8px;">📉 会被模型能力吸收的 Skill 类型</h4>
+        <ul style="font-size:.85rem;color:var(--text-secondary);padding-left:18px;">
+          <li><strong>流程步骤型：</strong>TDD 循环、Code Review 检查清单——模型推理能力增强后，它会"自然"遵循这些最佳实践，不需要显式的 Skill 步骤</li>
+          <li><strong>格式约束型：</strong>输出 JSON schema、Commit message 格式——结构化输出能力内化后，格式 Skill 降级为偏好声明</li>
+          <li><strong>基础安全规则：</strong>SQL 注入检查、XSS 防护——安全推理能力提升后，变为模型内置行为</li>
+          <li><strong>通用错误处理模式：</strong>try-catch 模板、重试逻辑——模型写这些就像今天写 for 循环一样自然</li>
+        </ul>
+      </div>
+      <div style="background:#f0fdf4;border-radius:var(--radius-sm);padding:20px;border:2px solid #a7f3d0;">
+        <h4 style="color:#065f46;margin-bottom:8px;">📈 不会消失的 Skill 类型</h4>
+        <ul style="font-size:.85rem;color:var(--text-secondary);padding-left:18px;">
+          <li><strong>团队特定约定：</strong>分支命名、代码组织、部署流程——模型再强也不可能猜到"你们团队用 __tests__ 还是 spec/ 目录"</li>
+          <li><strong>外部工具集成：</strong>公司内部 CLI、自建 API、定制 CI 脚本——这些都是模型训练数据之外的信息</li>
+          <li><strong>业务领域知识：</strong>风控规则、定价逻辑、特定行业术语——来自业务而非技术，模型无法"推理"出来</li>
+          <li><strong>组织流程编排：</strong>多 Agent 协作模式、审批流程、发布节奏——组织特有的流程设计</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tip" style="margin-top:16px;background:linear-gradient(135deg,#fef3c7,#fefce8);border-left-color:var(--accent3);">
+      <strong>💡 判断一个 Skill 是否会被模型吸收的简单法则：</strong>问自己——<strong>"这个信息，一个足够聪明的模型能自己推理出来吗？"</strong>如果能（如 TDD 步骤、错误处理模式），未来可能不需要 Skill。如果不能（如公司 CI 配置路径、团队 ESLint 规则、业务领域模型），Skill 就是<strong>永久的信息载体</strong>。
+    </div>
+
+    <div class="tip" style="margin-top:16px;background:linear-gradient(135deg,#f0f9ff,#eef2ff);border-left-color:var(--accent2);">
+      <strong>🎯 对当下的指导意义：</strong>正如 <a href="#s5-harness" style="color:var(--accent);">Section 5 中的 Harness 衰变定律</a> 所揭示的——<strong>模型原生能力 ∝ 1 / 所需外部规则的复杂度</strong>。Skill 设计应当<strong>为减法而设计</strong>：把"模型学不会的外部信息"写进 Skill，把"模型迟早能自己掌握的流程"留给模型推理。好的 Skill 集合会随着模型进化而<strong>自然瘦身</strong>，而不是越堆越厚。
+    </div>
+  </div>
+
+  <!-- 6.6 总结 -->
+  <div class="card" style="border:2px solid var(--accent);background:linear-gradient(135deg,#fafafe,#f5f3ff);">
+    <h3 style="margin-bottom:16px;">🎯 Skill 与信息管理：关键结论</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
+      <div style="background:#eef2ff;border-radius:var(--radius-sm);padding:18px;">
+        <strong>📌 Skill = 信息披露的自动化</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">打破"每次对话都要手动贴信息"的循环。项目知识从人的短期记忆变成系统的持久文本。</p>
+      </div>
+      <div style="background:#f0fdf4;border-radius:var(--radius-sm);padding:18px;">
+        <strong>📌 渐进加载 = 信息经济学最优解</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">名称索引（~50 tokens/Skill）→ 按需加载正文 → 极少数触发附带资源。信息覆盖最大化的同时 Token 成本最小化。</p>
+      </div>
+      <div style="background:#fef3c7;border-radius:var(--radius-sm);padding:18px;">
+        <strong>📌 Skill 产生信息复利</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">知识编码一次，所有未来会话和 Loop 迭代共享。Agent 不再从零推导项目规则。</p>
+      </div>
+      <div style="background:#f5f3ff;border-radius:var(--radius-sm);padding:18px;">
+        <strong>📌 为减法而设计</strong>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">把"模型学不会的外部信息"写进 Skill，把"模型迟早能自己掌握的流程"留给推理。Skill 集合应随模型进化而自然瘦身。</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+<!-- Section 7: 新员工心智模型 -->
+<section id="s5">
+  <h2 class="section-title">7. 新员工心智模型 —— 像带新人一样带 AI</h2>
+  <p class="section-subtitle">差别往往不在技术层面，而在一个基础认知：你到底是把 AI 当"全知全能的代码生成器"，还是当"能力很强但什么都不懂的第一天入职员工"？</p>
+
+  <div class="card">
+    <h3 style="margin-bottom:12px;">🧑‍💼 类比映射表：新员工的日常 → AI 协作的工程实践</h3>
+    <div class="matrix">
+      <table>
+        <thead><tr><th>新员工入职需要什么</th><th>映射到 AI 协作</th><th>工程实现</th></tr></thead>
+        <tbody>
+          <tr><td>入职资料包（项目简介、术语、规范）</td><td>补齐团队共识层</td><td>CLAUDE.md + CONTEXT.md + ADR</td></tr>
+          <tr><td>一张干净的工位和电脑</td><td>独立的执行环境</td><td>Git Worktree + 独立会话</td></tr>
+          <tr><td>师傅告诉 TA"从哪开始、哪些不能动"</td><td>三段式指令（起点+边界+验证）</td><td>每次派活时的明确指令</td></tr>
+          <tr><td>师傅的工位旁边可以随时问</td><td>对话式交互</td><td>Agent 模式的思考-行动循环</td></tr>
+          <tr><td>公司的工作 SOP</td><td>标准化 AI 协作流程</td><td>Skill 系统（四步流程）</td></tr>
+          <tr><td>犯错后师傅指正</td><td>Review + 反馈 + 更新约束文档</td><td>Code Review → 写进 CLAUDE.md</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px;">📝 三段式指令模板</h3>
+    <p style="font-size:.9rem;color:var(--text-secondary);margin-bottom:12px;">好的 AI 任务指令，跟带新员工时的交代几乎一样：</p>
+    <div class="code-block">
+      <span class="tag">【目标】</span><br>
+      给订单模块的 CreateOrder 函数加一个并发锁，防止超卖。<br><br>
+      <span class="tag">【起点】</span><br>
+      - 核心参考文件：orders/service.go 的 CreateOrder 函数（第 45 行）<br>
+      - 参考实现：inventory/service.go 里的锁实现（完整、线上验证过的写法）<br>
+      - 领域术语：见 CONTEXT.md 的"订单 → 库存扣减"段<br><br>
+      <span class="tag">【边界】</span><br>
+      - 要改的文件：orders/service.go（只改这一个）<br>
+      - 不要动的层：Gateway 层、Handler 层、Hook 层<br>
+      - 不要改 import 部分以外的任何代码<br>
+      - 超出范围的问题：只提出来，不要直接改<br><br>
+      <span class="tag">【验收】</span><br>
+      跑 go test ./orders/... -run TestCreateOrder -count=10，全部通过即为完成。
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px;">🔄 Skill 系统：不让 AI 跳步骤</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 800 160" xmlns="http://www.w3.org/2000/svg">
+        <rect x="20" y="30" width="160" height="100" rx="12" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/>
+        <text x="100" y="70" text-anchor="middle" font-size="15" font-weight="700" fill="#4f46e5">① Brainstorming</text>
+        <text x="100" y="90" text-anchor="middle" font-size="11" fill="#6b7280">先聊清楚方向</text>
+        <text x="100" y="108" text-anchor="middle" font-size="10" fill="#ef4444">防止方向错误</text>
+
+        <text x="215" y="85" font-size="22" fill="#6b7280">→</text>
+
+        <rect x="245" y="30" width="160" height="100" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="325" y="70" text-anchor="middle" font-size="15" font-weight="700" fill="#92400e">② Writing Plans</text>
+        <text x="325" y="90" text-anchor="middle" font-size="11" fill="#6b7280">拆成小步骤</text>
+        <text x="325" y="108" text-anchor="middle" font-size="10" fill="#10b981">每步可跟踪</text>
+
+        <text x="440" y="85" font-size="22" fill="#6b7280">→</text>
+
+        <rect x="470" y="30" width="160" height="100" rx="12" fill="#f0fdf4" stroke="#10b981" stroke-width="2"/>
+        <text x="550" y="70" text-anchor="middle" font-size="15" font-weight="700" fill="#065f46">③ Executing</text>
+        <text x="550" y="90" text-anchor="middle" font-size="11" fill="#6b7280">按步骤实施</text>
+        <text x="550" y="108" text-anchor="middle" font-size="10" fill="#10b981">早期发现错误</text>
+
+        <text x="665" y="85" font-size="22" fill="#6b7280">→</text>
+
+        <rect x="695" y="30" width="90" height="100" rx="12" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+        <text x="740" y="70" text-anchor="middle" font-size="15" font-weight="700" fill="#6d28d9">④ Verify</text>
+        <text x="740" y="90" text-anchor="middle" font-size="11" fill="#6b7280">展示证据</text>
+        <text x="740" y="108" text-anchor="middle" font-size="10" fill="#10b981">杜绝"嘴炮完成"</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>💡 心智转变的三个触发动作：</strong><br>
+    ① 每次派活前花 30 秒补信息——术语 AI 能不能自己搞懂？文件范围能看出来吗？哪些不能动？<br>
+    ② 接受"AI 会犯错"并建立纠偏机制——犯错不可怕，纠偏成本极低（回滚即修复）<br>
+    ③ 停止期待 AI"自己悟"——假设 AI 什么都不懂，每次需要它懂什么，就说清楚
+  </div>
+</section>
+
+<!-- Section 8: 实战 Checklist -->
+<section id="s6">
+  <h2 class="section-title">8. 实战 Checklist —— 上手就能用</h2>
+  <p class="section-subtitle">不需要一次全部做到。从最下面的一条开始，每一周加一条，一个月后整个协作模式会发生质变。</p>
+
+  <div class="accordion">
+    <div class="accordion-item" id="acc-1">
+      <button class="accordion-header" onclick="toggleAccordion('acc-1')">
+        第 1 周：建立基础文档 <span class="icon">▼</span>
+      </button>
+      <div class="accordion-body"><div class="accordion-body-inner">
+        <ul class="checklist">
+          <li>在项目根目录创建 <code>AGENTS.md</code>，写清：架构分层（哪层能调哪层）、目录约定、禁止事项</li>
+          <li>创建 <code>CONTEXT.md</code>，定义 3-5 个最容易被 AI 搞混的核心术语</li>
+          <li>确保 AI 工具配置了自动读取 AGENTS.md</li>
+        </ul>
+      </div></div>
+    </div>
+    <div class="accordion-item" id="acc-2">
+      <button class="accordion-header" onclick="toggleAccordion('acc-2')">
+        第 2 周：规范指令格式 <span class="icon">▼</span>
+      </button>
+      <div class="accordion-body"><div class="accordion-body-inner">
+        <ul class="checklist">
+          <li>每次派活用三段式指令：目标 + 起点 + 边界</li>
+          <li>明确告诉 AI 哪些文件/模块不能动</li>
+          <li>给出验收标准——跑什么命令、哪个测试通过就算完成</li>
+        </ul>
+      </div></div>
+    </div>
+    <div class="accordion-item" id="acc-3">
+      <button class="accordion-header" onclick="toggleAccordion('acc-3')">
+        第 3 周：引入 Worktree 并行 <span class="icon">▼</span>
+      </button>
+      <div class="accordion-body"><div class="accordion-body-inner">
+        <ul class="checklist">
+          <li>安装 git worktree 工作流（<code>git worktree add ../proj-feat feat/xxx</code>）</li>
+          <li>每个 AI 任务开独立 worktree + 独立会话</li>
+          <li>不同任务不混在同一个会话里</li>
+        </ul>
+      </div></div>
+    </div>
+    <div class="accordion-item" id="acc-4">
+      <button class="accordion-header" onclick="toggleAccordion('acc-4')">
+        第 4 周：建立纠偏闭环 <span class="icon">▼</span>
+      </button>
+      <div class="accordion-body"><div class="accordion-body-inner">
+        <ul class="checklist">
+          <li>Review AI 代码时，发现系统性问题马上写进 AGENTS.md（如"Provider 改动不触及 Gateway"）</li>
+          <li>每次 AI 犯错 = 一次文档升级的机会</li>
+          <li>把常用模式沉淀为 Skill（SOP），让 AI 不跳关键步骤</li>
+        </ul>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 9: 反模式速查 -->
+<section id="s7">
+  <h2 class="section-title">9. 反模式速查 —— 常见的坑与修正方案</h2>
+
+  <div class="card interactive">
+    <h3 style="margin-bottom:16px;">⚠️ 上下文污染八大高发场景</h3>
+    <div id="anti-patterns" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;">
+      <div class="anti-card" style="padding:16px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;" onclick="flipCard(this)">
+        <div class="anti-front">
+          <strong>❌ 一次性塞入大量日志</strong>
+          <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">几千行日志只有 2-3 行关键错误，被淹没。AI 逐行分析日志耗尽上下文。</p>
+        </div>
+        <div class="anti-back" style="display:none;">
+          <strong style="color:#10b981;">✅ 修正</strong>
+          <p style="font-size:.8rem;color:var(--text-secondary);">先用 shell 过滤 ERROR/FATAL，只送有价值上下文</p>
+        </div>
+      </div>
+      <div class="anti-card" style="padding:16px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;" onclick="flipCard(this)">
+        <div class="anti-front">
+          <strong>❌ 把整个 README 贴进对话</strong>
+          <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">AI 完全可以自己 read。贴进去分散它对关键代码的注意力。</p>
+        </div>
+        <div class="anti-back" style="display:none;">
+          <strong style="color:#10b981;">✅ 修正</strong>
+          <p style="font-size:.8rem;color:var(--text-secondary);">让 AI 自己读文件，不要主动贴</p>
+        </div>
+      </div>
+      <div class="anti-card" style="padding:16px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;" onclick="flipCard(this)">
+        <div class="anti-front">
+          <strong>❌ 一个会话混做多个任务</strong>
+          <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">旧任务讨论占着上下文，新任务关键信息被稀释。</p>
+        </div>
+        <div class="anti-back" style="display:none;">
+          <strong style="color:#10b981;">✅ 修正</strong>
+          <p style="font-size:.8rem;color:var(--text-secondary);">不同任务开不同会话，一条会话一条事</p>
+        </div>
+      </div>
+      <div class="anti-card" style="padding:16px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;" onclick="flipCard(this)">
+        <div class="anti-front">
+          <strong>❌ 主动塞入"可能用到"的所有文件</strong>
+          <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">10 个文件同时看，AI 在关键信息中迷失。</p>
+        </div>
+        <div class="anti-back" style="display:none;">
+          <strong style="color:#10b981;">✅ 修正</strong>
+          <p style="font-size:.8rem;color:var(--text-secondary);">只贴 2-3 个核心文件，AI 需要更多自己读</p>
+        </div>
+      </div>
+      <div class="anti-card" style="padding:16px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;" onclick="flipCard(this)">
+        <div class="anti-front">
+          <strong>❌ 上下文快满时追加关键信息</strong>
+          <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">工具可能自动压缩历史，追加内容被"挤掉"关键细节。</p>
+        </div>
+        <div class="anti-back" style="display:none;">
+          <strong style="color:#10b981;">✅ 修正</strong>
+          <p style="font-size:.8rem;color:var(--text-secondary);">感觉上下文快满时，开新会话，总结当前结论作为起点</p>
+        </div>
+      </div>
+      <div class="anti-card" style="padding:16px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;" onclick="flipCard(this)">
+        <div class="anti-front">
+          <strong>❌ 超长 Prompt 模板</strong>
+          <p style="font-size:.8rem;color:var(--text-secondary);margin-top:6px;">几百行模板 + 实际任务，上下文窗口已去一小半。</p>
+        </div>
+        <div class="anti-back" style="display:none;">
+          <strong style="color:#10b981;">✅ 修正</strong>
+          <p style="font-size:.8rem;color:var(--text-secondary);">长期规则放 CLAUDE.md，对话中只写本次直接相关的</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>本文档综合自 <a href="docs/candidate/" style="color:var(--accent);">docs/candidate/</a> 系列文章</p>
+  <p style="margin-top:6px;">信息分层模型 · 信息披露本质 · 上下文管理 · Agent vs Workflow · Harness 与 Loop · Skill 与信息管理 · 新员工心智模型 · 实战 Checklist · 反模式速查</p>
+  <p style="margin-top:16px;font-size:.8rem;">核心观点：AI 每少知道一点，就会拿"猜测"补上——而它的猜测，往往就是 Review 时头疼的来源。</p>
+</footer>
+
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// Back to top visibility
+window.addEventListener('scroll', () => {
+  document.getElementById('backToTop').classList.toggle('visible', window.scrollY > 600);
+});
+
+// Smooth scroll for TOC links
+document.querySelectorAll('nav.toc a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// Tab system
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.parentElement;
+    group.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const container = group.parentElement;
+    container.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    const targetPanel = container.querySelector('#' + btn.dataset.tab);
+    if (targetPanel) targetPanel.classList.add('active');
+  });
+});
+
+// Accordion toggle
+function toggleAccordion(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// Flip cards for anti-patterns
+function flipCard(card) {
+  const front = card.querySelector('.anti-front');
+  const back = card.querySelector('.anti-back');
+  if (front.style.display === 'none') {
+    front.style.display = 'block';
+    back.style.display = 'none';
+    card.style.background = '';
+  } else {
+    front.style.display = 'none';
+    back.style.display = 'block';
+    card.style.background = '#f0fdf4';
+  }
+}
+
+// Context window simulator
+const logSlider = document.getElementById('log-slider');
+const fileSlider = document.getElementById('file-slider');
+const turnSlider = document.getElementById('turn-slider');
+
+function updateCtxBar() {
+  const logLines = parseInt(logSlider.value);
+  const files = parseInt(fileSlider.value);
+  const turns = parseInt(turnSlider.value);
+  
+  document.getElementById('log-val').textContent = logLines;
+  document.getElementById('file-val').textContent = files;
+  document.getElementById('turn-val').textContent = turns;
+  
+  // Rough estimate: 1 line of log ~ 3 tokens, 1 file(500 lines) ~ 2500 tokens, 1 turn ~ 800 tokens
+  const logTokens = logLines * 3;
+  const fileTokens = files * 2500;
+  const turnTokens = turns * 800;
+  const total = logTokens + fileTokens + turnTokens;
+  const maxTokens = 200000;
+  const pct = Math.min((total / maxTokens) * 100, 100);
+  
+  document.getElementById('ctx-bar').style.width = pct + '%';
+  document.getElementById('ctx-usage').textContent = Math.round(total / 1000) + 'K';
+  
+  const status = document.getElementById('ctx-status');
+  if (pct < 40) {
+    status.textContent = '安全';
+    status.style.color = '#10b981';
+  } else if (pct < 70) {
+    status.textContent = '注意';
+    status.style.color = '#f59e0b';
+  } else if (pct < 90) {
+    status.textContent = '⚠ 紧张';
+    status.style.color = '#ef4444';
+  } else {
+    status.textContent = '🔴 即将溢出';
+    status.style.color = '#dc2626';
+  }
+}
+
+logSlider.addEventListener('input', updateCtxBar);
+fileSlider.addEventListener('input', updateCtxBar);
+turnSlider.addEventListener('input', updateCtxBar);
+
+// Initialize
+document.getElementById('acc-1').classList.add('open');
+updateCtxBar();
+
+// Copy code button for code blocks
+document.querySelectorAll('.code-block').forEach(block => {
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = '📋 复制';
+  btn.addEventListener('click', () => {
+    const text = block.innerText.replace('📋 复制', '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✅ 已复制';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 复制'; btn.classList.remove('copied'); }, 2000);
+    });
+  });
+  block.appendChild(btn);
+});
+</script>
+</body>
+</html>
+
+</div>
+
+<footer>
+  <p>本文档综合自 <a href="docs/candidate/" style="color:var(--accent);">docs/candidate/</a> 系列文章</p>
+  <p style="margin-top:6px;">信息分层模型 · 信息披露本质 · 上下文管理 · Agent vs Workflow · 新员工心智模型 · Harness 与 Loop</p>
+  <p style="margin-top:16px;font-size:.8rem;">核心观点：AI 每少知道一点，就会拿"猜测"补上——而它的猜测，往往就是 Review 时头疼的来源。</p>
+</footer>
+
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// Back to top visibility
+window.addEventListener('scroll', () => {
+  document.getElementById('backToTop').classList.toggle('visible', window.scrollY > 600);
+});
+
+// Smooth scroll for TOC links
+document.querySelectorAll('nav.toc a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// Tab system
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.parentElement;
+    group.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const container = group.parentElement;
+    container.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    const targetPanel = container.querySelector('#' + btn.dataset.tab);
+    if (targetPanel) targetPanel.classList.add('active');
+  });
+});
+
+// Accordion toggle
+function toggleAccordion(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// Flip cards for anti-patterns
+function flipCard(card) {
+  const front = card.querySelector('.anti-front');
+  const back = card.querySelector('.anti-back');
+  if (front.style.display === 'none') {
+    front.style.display = 'block';
+    back.style.display = 'none';
+    card.style.background = '';
+  } else {
+    front.style.display = 'none';
+    back.style.display = 'block';
+    card.style.background = '#f0fdf4';
+  }
+}
+
+// Context window simulator
+const logSlider = document.getElementById('log-slider');
+const fileSlider = document.getElementById('file-slider');
+const turnSlider = document.getElementById('turn-slider');
+
+function updateCtxBar() {
+  const logLines = parseInt(logSlider.value);
+  const files = parseInt(fileSlider.value);
+  const turns = parseInt(turnSlider.value);
+  
+  document.getElementById('log-val').textContent = logLines;
+  document.getElementById('file-val').textContent = files;
+  document.getElementById('turn-val').textContent = turns;
+  
+  // Rough estimate: 1 line of log ~ 3 tokens, 1 file(500 lines) ~ 2500 tokens, 1 turn ~ 800 tokens
+  const logTokens = logLines * 3;
+  const fileTokens = files * 2500;
+  const turnTokens = turns * 800;
+  const total = logTokens + fileTokens + turnTokens;
+  const maxTokens = 200000;
+  const pct = Math.min((total / maxTokens) * 100, 100);
+  
+  document.getElementById('ctx-bar').style.width = pct + '%';
+  document.getElementById('ctx-usage').textContent = Math.round(total / 1000) + 'K';
+  
+  const status = document.getElementById('ctx-status');
+  if (pct < 40) {
+    status.textContent = '安全';
+    status.style.color = '#10b981';
+  } else if (pct < 70) {
+    status.textContent = '注意';
+    status.style.color = '#f59e0b';
+  } else if (pct < 90) {
+    status.textContent = '⚠ 紧张';
+    status.style.color = '#ef4444';
+  } else {
+    status.textContent = '🔴 即将溢出';
+    status.style.color = '#dc2626';
+  }
+}
+
+logSlider.addEventListener('input', updateCtxBar);
+fileSlider.addEventListener('input', updateCtxBar);
+turnSlider.addEventListener('input', updateCtxBar);
+
+// Initialize
+document.getElementById('acc-1').classList.add('open');
+updateCtxBar();
+
+// Copy code button for code blocks
+document.querySelectorAll('.code-block').forEach(block => {
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = '📋 复制';
+  btn.addEventListener('click', () => {
+    const text = block.innerText.replace('📋 复制', '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✅ 已复制';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 复制'; btn.classList.remove('copied'); }, 2000);
+    });
+  });
+  block.appendChild(btn);
+});
+</script>
+<script src="../shared/header.js"></script>
+</body>
+</html>

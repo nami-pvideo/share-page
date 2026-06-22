@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>创作工具接入指南</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --bg-elevated: #ffffff;
+    --fg: #1d1d1f;
+    --fg-secondary: #6e6e73;
+    --fg-tertiary: #86868b;
+    --separator: rgba(0, 0, 0, 0.06);
+    --separator-strong: rgba(0, 0, 0, 0.1);
+    --accent: #007aff;
+    --accent-hover: #0066d6;
+    --accent-soft: rgba(0, 122, 255, 0.08);
+    --indigo: #5856d6;
+    --teal: #5ac8fa;
+    --green: #34c759;
+    --orange: #ff9500;
+    --red: #ff3b30;
+    --pink: #ff2d55;
+    --gray: #f2f2f7;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+    --shadow: 0 4px 16px rgba(0,0,0,.04), 0 1px 3px rgba(0,0,0,.03);
+    --shadow-lg: 0 20px 40px -12px rgba(0,0,0,.08), 0 4px 8px -4px rgba(0,0,0,.04);
+    --radius: 18px;
+    --radius-sm: 12px;
+    --radius-xs: 8px;
+    --blur-bg: rgba(255,255,255,0.72);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000;
+      --bg-elevated: #1c1c1e;
+      --fg: #f5f5f7;
+      --fg-secondary: #aeaeb2;
+      --fg-tertiary: #8e8e93;
+      --separator: rgba(255,255,255,0.08);
+      --separator-strong: rgba(255,255,255,0.14);
+      --accent-soft: rgba(10, 132, 255, 0.16);
+      --gray: #2c2c2e;
+      --blur-bg: rgba(28,28,30,0.72);
+      --shadow: 0 4px 16px rgba(0,0,0,.3);
+      --shadow-lg: 0 20px 40px rgba(0,0,0,.4);
+    }
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+  }
+  ::selection { background: var(--accent-soft); }
+
+  /* Sticky Top Nav (glass) */
+  .topnav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--blur-bg);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--separator);
+  }
+  .topnav-inner {
+    max-width: 1100px; margin: 0 auto; padding: 12px 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  }
+  .topnav-brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; }
+  .topnav-brand .icon {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: linear-gradient(135deg, var(--accent), var(--indigo));
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 14px;
+  }
+  .topnav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+  .topnav-links a {
+    color: var(--fg-secondary); text-decoration: none; font-size: 13px;
+    padding: 6px 12px; border-radius: 8px; transition: all .15s;
+    font-weight: 500;
+  }
+  .topnav-links a:hover { background: var(--gray); color: var(--fg); }
+  .topnav-links a.active { color: var(--accent); background: var(--accent-soft); }
+  @media (max-width: 768px) { .topnav-links { display: none; } }
+
+  /* Progress bar */
+  .progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 200; width: 0; transition: width .1s; }
+
+  /* Container */
+  .container { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero */
+  .hero {
+    text-align: center; padding: 96px 24px 80px;
+    background:
+      radial-gradient(ellipse 800px 400px at 50% 0%, rgba(0,122,255,.08), transparent 60%),
+      radial-gradient(ellipse 600px 300px at 30% 50%, rgba(88,86,214,.06), transparent 60%),
+      radial-gradient(ellipse 600px 300px at 70% 50%, rgba(255,45,85,.04), transparent 60%);
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 100px;
+    background: var(--bg-elevated); border: 1px solid var(--separator);
+    font-size: 13px; font-weight: 500; color: var(--fg-secondary);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 24px;
+  }
+  .hero-eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+  .hero h1 {
+    font-size: clamp(36px, 5.6vw, 56px); font-weight: 700;
+    letter-spacing: -0.03em; line-height: 1.08; margin-bottom: 20px;
+    background: linear-gradient(180deg, var(--fg) 30%, var(--fg-secondary) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p.lede { font-size: 19px; color: var(--fg-secondary); max-width: 620px; margin: 0 auto 36px; line-height: 1.5; }
+  .hero-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 11px 22px; border-radius: 100px; font-size: 14px; font-weight: 500;
+    text-decoration: none; transition: all .2s; cursor: pointer; border: none;
+    font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+  .btn-secondary { background: var(--bg-elevated); color: var(--fg); border: 1px solid var(--separator); }
+  .btn-secondary:hover { background: var(--gray); transform: translateY(-1px); }
+
+  /* Section */
+  section { padding: 64px 0 8px; scroll-margin-top: 70px; }
+  .section-eyebrow {
+    font-size: 13px; font-weight: 600; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;
+  }
+  .section-title { font-size: clamp(28px, 3.6vw, 38px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 14px; }
+  .section-lede { font-size: 17px; color: var(--fg-secondary); max-width: 720px; margin-bottom: 32px; line-height: 1.55; }
+
+  /* Card */
+  .card {
+    background: var(--bg-elevated);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    border: 1px solid var(--separator);
+    transition: all .25s;
+    margin-bottom: 16px;
+  }
+  .card:hover { box-shadow: var(--shadow); }
+  .card h3 { font-size: 19px; font-weight: 600; margin-bottom: 12px; letter-spacing: -0.01em; }
+  .card h4 { font-size: 16px; font-weight: 600; margin: 18px 0 10px; }
+  .card p { color: var(--fg-secondary); margin-bottom: 8px; }
+
+  /* Three-step grid */
+  .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 12px; }
+  @media (max-width: 768px) { .steps-grid { grid-template-columns: 1fr; } }
+  .step-card {
+    background: var(--bg-elevated); border-radius: var(--radius);
+    padding: 28px 24px; border: 1px solid var(--separator);
+    transition: all .3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative; overflow: hidden;
+  }
+  .step-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--separator-strong); }
+  .step-card .step-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 20px; margin-bottom: 16px;
+    background: var(--gray);
+  }
+  .step-card.s1 .step-icon { background: linear-gradient(135deg, #34c759, #5ac8fa); color: white; }
+  .step-card.s2 .step-icon { background: linear-gradient(135deg, #ff9500, #ff2d55); color: white; }
+  .step-card.s3 .step-icon { background: linear-gradient(135deg, #007aff, #5856d6); color: white; }
+  .step-card .step-num { font-size: 12px; font-weight: 600; color: var(--fg-tertiary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .step-card h4 { font-size: 17px; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.01em; }
+  .step-card p { font-size: 14px; color: var(--fg-secondary); margin: 0; line-height: 1.55; }
+  .step-card .who { display: inline-block; padding: 2px 9px; border-radius: 100px; font-size: 11px; background: var(--accent-soft); color: var(--accent); font-weight: 500; margin-top: 12px; }
+
+  /* Segmented control (Tabs) */
+  .segmented {
+    display: inline-flex; padding: 3px; background: var(--gray);
+    border-radius: 12px; gap: 2px; margin-bottom: 16px;
+  }
+  .seg-btn {
+    padding: 8px 18px; border: none; background: transparent; cursor: pointer;
+    font-size: 13.5px; font-weight: 500; color: var(--fg-secondary);
+    border-radius: 9px; transition: all .2s; font-family: inherit;
+  }
+  .seg-btn.active { background: var(--bg-elevated); color: var(--fg); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .seg-panel { display: none; animation: panelFade .25s ease; }
+  .seg-panel.active { display: block; }
+  @keyframes panelFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  /* Code block (mac terminal style) */
+  .terminal {
+    background: #1d1d1f; border-radius: var(--radius-sm); overflow: hidden;
+    box-shadow: var(--shadow); margin: 16px 0;
+  }
+  .terminal-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; background: #2c2c2e; border-bottom: 1px solid #3a3a3c;
+  }
+  .terminal-bar .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .terminal-bar .dot.r { background: #ff5f57; }
+  .terminal-bar .dot.y { background: #febc2e; }
+  .terminal-bar .dot.g { background: #28c840; }
+  .terminal-bar .label { margin-left: 10px; font-size: 12px; color: #8e8e93; font-family: "SF Mono", Menlo, Consolas, monospace; }
+  .terminal-bar .copy-btn {
+    margin-left: auto; background: rgba(255,255,255,.08); color: #f5f5f7;
+    border: 1px solid rgba(255,255,255,.1); padding: 4px 12px; border-radius: 6px;
+    font-size: 11px; cursor: pointer; transition: all .15s;
+    font-family: inherit;
+  }
+  .terminal-bar .copy-btn:hover { background: rgba(255,255,255,.16); }
+  .terminal-bar .copy-btn.copied { background: var(--green); border-color: var(--green); }
+  .terminal pre { padding: 16px 18px; color: #e5e5e7; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; line-height: 1.7; overflow-x: auto; }
+  .terminal pre .cmt { color: #6e6e73; }
+  .terminal pre .str { color: #a8e08f; }
+  .terminal pre .key { color: #82aaff; }
+
+  /* Inline code */
+  :not(pre) > code {
+    background: var(--gray); color: var(--accent);
+    padding: 1px 7px; border-radius: 5px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.88em;
+  }
+
+  /* Callout */
+  .callout {
+    border-radius: var(--radius-sm); padding: 16px 20px;
+    margin: 16px 0; display: flex; gap: 14px; align-items: flex-start;
+    background: var(--bg-elevated); border: 1px solid var(--separator);
+  }
+  .callout .ico {
+    width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; color: white;
+  }
+  .callout-tip { background: rgba(0,122,255,.04); border-color: rgba(0,122,255,.14); }
+  .callout-tip .ico { background: var(--accent); }
+  .callout-warn { background: rgba(255,149,0,.05); border-color: rgba(255,149,0,.18); }
+  .callout-warn .ico { background: var(--orange); }
+  .callout-success { background: rgba(52,199,89,.05); border-color: rgba(52,199,89,.18); }
+  .callout-success .ico { background: var(--green); }
+  .callout-danger { background: rgba(255,59,48,.04); border-color: rgba(255,59,48,.16); }
+  .callout-danger .ico { background: var(--red); }
+  .callout strong { color: var(--fg); }
+  .callout p { margin: 0; color: var(--fg); font-size: 14.5px; }
+  .callout ul { margin: 6px 0 0 18px; font-size: 14px; color: var(--fg-secondary); }
+  .callout ul li { margin: 3px 0; }
+
+  /* Flow */
+  .flow { display: flex; flex-direction: column; gap: 8px; align-items: center; margin: 16px 0; }
+  .flow-pill {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--separator);
+    border-radius: 100px;
+    padding: 12px 22px 12px 12px;
+    min-width: 380px; max-width: 100%;
+    box-shadow: var(--shadow-sm);
+    transition: all .25s;
+  }
+  .flow-pill:hover { transform: scale(1.02); box-shadow: var(--shadow); }
+  .flow-pill .num {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 13px; font-weight: 600;
+    background: var(--accent);
+  }
+  .flow-pill.dev .num { background: var(--indigo); }
+  .flow-pill.ops .num { background: var(--orange); }
+  .flow-pill.go .num { background: var(--green); }
+  .flow-pill .who-tag {
+    font-size: 11px; font-weight: 600; color: var(--fg-tertiary);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .flow-pill .what { font-size: 14px; font-weight: 500; }
+  .flow-arrow { color: var(--fg-tertiary); font-size: 16px; line-height: 1; }
+  @media (max-width: 768px) { .flow-pill { min-width: 0; width: 100%; } }
+
+  /* Table */
+  .data-table {
+    background: var(--bg-elevated); border-radius: var(--radius-sm);
+    border: 1px solid var(--separator); overflow: hidden; margin: 16px 0;
+  }
+  .data-table table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .data-table th, .data-table td { padding: 13px 16px; text-align: left; vertical-align: top; }
+  .data-table th {
+    background: var(--gray); font-weight: 600; font-size: 12px;
+    color: var(--fg-secondary); text-transform: uppercase; letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--separator);
+  }
+  .data-table td { border-bottom: 1px solid var(--separator); }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr { transition: background .15s; }
+  .data-table tbody tr:hover { background: var(--gray); }
+  .data-table .req { color: var(--red); font-weight: 700; margin-right: 4px; }
+  .data-table .num-cell { color: var(--fg-tertiary); font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; width: 40px; }
+
+  /* Pills */
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+  .pill {
+    background: var(--gray); color: var(--fg); padding: 4px 11px;
+    border-radius: 100px; font-size: 12.5px; font-weight: 500;
+  }
+  .pill.blue { background: rgba(0,122,255,.1); color: var(--accent); }
+  .pill.orange { background: rgba(255,149,0,.12); color: #c66700; }
+  .pill.purple { background: rgba(88,86,214,.12); color: var(--indigo); }
+  .pill.green { background: rgba(52,199,89,.12); color: #248a3d; }
+
+  /* Image */
+  figure {
+    margin: 20px 0; text-align: center;
+    background: var(--bg-elevated); padding: 16px;
+    border-radius: var(--radius); border: 1px solid var(--separator);
+    box-shadow: var(--shadow-sm);
+  }
+  figure img {
+    max-width: 100%; border-radius: var(--radius-sm);
+    cursor: zoom-in; transition: all .3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  figure img:hover { transform: scale(1.005); }
+  figcaption { color: var(--fg-secondary); font-size: 13px; margin-top: 14px; line-height: 1.5; }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed; inset: 0; background: rgba(0,0,0,.94);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    display: none; align-items: center; justify-content: center;
+    z-index: 1000; cursor: zoom-out; padding: 40px;
+    animation: lbFade .25s ease;
+  }
+  @keyframes lbFade { from { opacity: 0; } to { opacity: 1; } }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 100%; max-height: 100%; border-radius: 12px; }
+
+  /* Checklist */
+  .check-progress {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--bg-elevated); padding: 14px 20px;
+    border-radius: var(--radius-sm); border: 1px solid var(--separator);
+    margin-bottom: 14px;
+  }
+  .check-progress .label {
+    font-size: 13px; color: var(--fg-secondary); font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .check-progress .label .ico { width: 20px; height: 20px; border-radius: 6px; background: var(--accent); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; }
+  .check-progress .bar { flex: 1; height: 6px; background: var(--gray); border-radius: 3px; overflow: hidden; }
+  .check-progress .bar-inner { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); border-radius: 3px; transition: width .4s cubic-bezier(0.16, 1, 0.3, 1); }
+  .check-progress .count {
+    font-size: 13px; color: var(--fg); font-weight: 600;
+    font-feature-settings: "tnum"; font-variant-numeric: tabular-nums;
+  }
+
+  .checklist { list-style: none; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 16px; border-radius: 10px;
+    cursor: pointer; transition: all .15s;
+    user-select: none; font-size: 14.5px;
+  }
+  .checklist li:hover { background: var(--gray); }
+  .checklist li .box {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 1.5px solid var(--separator-strong); background: var(--bg-elevated);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    transition: all .2s; margin-top: 1px;
+    color: white; font-size: 13px; font-weight: 700;
+  }
+  .checklist li.done .box { background: var(--accent); border-color: var(--accent); }
+  .checklist li.done .box::after { content: "✓"; }
+  .checklist li.done { color: var(--fg-tertiary); }
+  .checklist li.done .text { text-decoration: line-through; }
+
+  /* Accordion */
+  .accordion { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+  .accordion details {
+    background: var(--bg-elevated); border-radius: var(--radius-sm);
+    border: 1px solid var(--separator); overflow: hidden;
+    transition: all .2s;
+  }
+  .accordion details[open] { box-shadow: var(--shadow); }
+  .accordion summary {
+    padding: 16px 20px; cursor: pointer; font-weight: 500; font-size: 14.5px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    list-style: none; transition: background .15s;
+  }
+  .accordion summary:hover { background: var(--gray); }
+  .accordion summary::-webkit-details-marker { display: none; }
+  .accordion summary::after {
+    content: "+"; font-size: 22px; color: var(--fg-tertiary);
+    line-height: 1; transition: transform .25s; flex-shrink: 0;
+  }
+  .accordion details[open] summary::after { transform: rotate(45deg); color: var(--accent); }
+  .accordion .body { padding: 0 20px 18px 20px; color: var(--fg-secondary); font-size: 14px; line-height: 1.65; }
+
+  /* Footer cards */
+  .nav-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 16px 0; }
+  .nav-card {
+    background: var(--bg-elevated); border-radius: var(--radius-sm);
+    padding: 22px; border: 1px solid var(--separator);
+    text-decoration: none; transition: all .25s cubic-bezier(0.16, 1, 0.3, 1);
+    display: block; color: inherit;
+  }
+  .nav-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--separator-strong); }
+  .nav-card .nc-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--indigo));
+    color: white;
+  }
+  .nav-card .nc-tag { font-size: 11px; font-weight: 600; color: var(--fg-tertiary); text-transform: uppercase; letter-spacing: 0.06em; }
+  .nav-card .nc-title { font-size: 16px; font-weight: 600; margin: 4px 0 4px; letter-spacing: -0.01em; }
+  .nav-card .nc-desc { font-size: 13.5px; color: var(--fg-secondary); line-height: 1.5; }
+  .nav-card .nc-arrow { color: var(--accent); font-size: 14px; margin-top: 10px; transition: transform .2s; display: inline-block; }
+  .nav-card:hover .nc-arrow { transform: translateX(3px); }
+
+  /* Footer */
+  footer { padding: 80px 24px 40px; text-align: center; color: var(--fg-tertiary); font-size: 12.5px; }
+
+  /* Highlight on first load */
+  .declaration-card {
+    background: linear-gradient(135deg, rgba(0,122,255,.06), rgba(88,86,214,.06));
+    border: 1px solid rgba(0,122,255,.18);
+    border-radius: var(--radius-sm); padding: 18px 22px;
+    text-align: center; font-size: 15px; font-weight: 500; color: var(--accent);
+    font-family: "SF Mono", Menlo, monospace;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* AI review readonly checklist — always shown as checked */
+  #s65 .checklist li .box {
+    background: var(--green); border-color: var(--green); color: white;
+  }
+  #s65 .checklist li .box::after { content: "✓"; }
+  #s65 .checklist li:hover { background: transparent; cursor: default; }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- Sticky Top Nav -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <div class="topnav-brand">
+      <div class="icon">🛠</div>
+      <span>创作工具接入</span>
+    </div>
+    <div class="topnav-links">
+      <a href="#s1">介绍</a>
+      <a href="#s2">使用方式</a>
+      <a href="#s3">流程</a>
+      <a href="#s4">配置入口</a>
+      <a href="#s5">必交付</a>
+      <a href="#s6">验收</a>
+      <a href="#s65">Review 保障</a>
+      <a href="#s7">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="hero-eyebrow"><span class="dot"></span>产品 / 运营版 · v1.0</div>
+  <h1>创作工具接入指南</h1>
+  <p class="lede">从想做一个新工具，到它出现在用户面前——这份文档讲清楚你要交付什么、怎么配置、怎么验收。</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="#s3">查看接入流程 →</a>
+    <a class="btn btn-secondary" href="#s5">必交付物料</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- §1 -->
+  <section id="s1">
+    <div class="section-eyebrow">01 · Overview</div>
+    <h2 class="section-title">这份文档干什么用</h2>
+    <p class="section-lede">「纳米P视频」前端的所有创作工具（服装上身、图片翻译、商品替换……）共用同一套接入框架。新增一个工具时，产品 / 运营要做的事可以分成三件——做完这三件，工具就能上线。</p>
+
+    <div class="steps-grid">
+      <div class="step-card s1">
+        <div class="step-icon">🎯</div>
+        <div class="step-num">Task 01</div>
+        <h4>想清楚要做什么</h4>
+        <p>从产品 PRD 拿到工具 key 与展示名、明确生图还是生视频；与设计师确认交互稿（Figma）。</p>
+        <span class="who">产品主导</span>
+      </div>
+      <div class="step-card s2">
+        <div class="step-icon">📋</div>
+        <div class="step-num">Task 02</div>
+        <h4>配置云控（CMS）</h4>
+        <p>CMS key + 完整 <code>value</code>：使用指南文案、空状态素材、模型 / 计费、工具专属字段。</p>
+        <span class="who">运营主导</span>
+      </div>
+      <div class="step-card s3">
+        <div class="step-icon">🚀</div>
+        <div class="step-num">Task 03</div>
+        <h4>入口 + 验证 + 提测</h4>
+        <p>配置透出入口 → 通过 skill 产出代码 → 按 <a href="#s6">第 6 节</a> 验证功能 → 提测上线。</p>
+        <span class="who">运营主导</span>
+      </div>
+    </div>
+
+    <div class="callout callout-success">
+      <div class="ico">✨</div>
+      <div>
+        <strong>你不需要操心的部分</strong>
+        <p style="margin-top:4px;">UI 复用、回填 / 重试链路、积分预估、空态展示、登录会员积分……都由现有框架统一处理。开发只需按 <a href="./TOOL_TYPE_INTEGRATION_GUIDE.md">开发指南</a> 把工具挂上注册表即可。</p>
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="ico">📈</div>
+      <div>
+        <strong>越接入越便宜：这套规范的复利效应</strong>
+        <p style="margin-top:4px;">每接入一个新工具，模块级 skill 就会沉淀一次（新坑回写到规范、Review 清单加一条、差异表多一列）——下一个工具的接入成本会更低、AI 更熟、出错更少。所以在 <a href="#s6">第 6 节</a> 验收完成后，建议把这次踩到的新坑反馈给开发，让规范越用越厚。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §2 -->
+  <section id="s2">
+    <div class="section-eyebrow">02 · How to Use</div>
+    <h2 class="section-title">两种使用方式</h2>
+    <p class="section-lede">本文档既可以作为 AI Skill 唤起规范使用，也可以作为普通文档贴路径给 AI。选哪种取决于你是否经常接入新工具。</p>
+
+    <div class="segmented" role="tablist">
+      <button class="seg-btn active" data-seg="seg-skill">🪄 通过 Skill 调用</button>
+      <button class="seg-btn" data-seg="seg-path">📋 直接贴文档路径</button>
+    </div>
+
+    <div class="seg-panel active" id="seg-skill">
+      <div class="card">
+        <h3>① 安装 Skill</h3>
+        <p>我们把整套接入规范沉淀成了 Claude Code skill <code>namivideo-creation-tools</code>。推荐用 sparse-checkout 只拉本 skill：</p>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="label">Terminal · zsh</span>
+            <button class="copy-btn">复制</button>
+          </div>
+<pre><span class="cmt"># 安装到 ~/.claude/skills/namivideo-creation-tools</span>
+cd ~/.claude/skills
+git clone --filter=blob:none --no-checkout \
+  git@github.com:nami-pvideo/skill-hub.git _skill-hub-tmp
+cd _skill-hub-tmp
+git sparse-checkout init --cone
+git sparse-checkout set dev
+git checkout main
+mv dev ../namivideo-creation-tools
+cd .. && rm -rf _skill-hub-tmp</pre>
+        </div>
+
+        <h3 style="margin-top:24px;">② 验证安装成功</h3>
+        <p>重启 Claude Code，在对话框输入 <code>/</code>，斜杠菜单中应能看到 <code>namivideo-creation-tools</code> 候选项：</p>
+        <figure>
+          <img src="https://p2.ssl.qhimg.com/t110b9a9301d75f1ef1e27df879.png" alt="图二：编辑器斜杠菜单候选项">
+          <figcaption><strong>图二</strong> · 斜杠菜单中出现 <code>namivideo-creation-tools</code> 即代表安装成功。点击图片可放大查看。</figcaption>
+        </figure>
+
+        <h3 style="margin-top:24px;">③ 调用 Skill</h3>
+        <p>在对话中直接输入 <code>/namivideo-creation-tools</code>，AI 会按 <a href="#s5">第 5 节</a>「必交付信息」与你逐项确认，然后驱动开发完成对接。</p>
+      </div>
+    </div>
+
+    <div class="seg-panel" id="seg-path">
+      <div class="card">
+        <h3>直接贴文档路径</h3>
+        <p>不想装 skill 的话，可以在与 AI 对话时直接把这份文档（或开发版指南）路径贴给它：</p>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="label">Prompt</span>
+            <button class="copy-btn">复制</button>
+          </div>
+<pre>请按这份文档接入一个新工具：
+/Users/.../nami-video-web/src/features/creation-tools/TOOL_ONBOARDING_FOR_PM.md</pre>
+        </div>
+        <p>AI 会读完文档后按同样的流程与你对接。</p>
+        <div class="callout callout-tip">
+          <div class="ico">💡</div>
+          <div><strong>为什么推荐 Skill 模式：</strong>装上 skill 后，AI 遇到「我想加个新工具」时会主动唤起规范流程；不用每次手动贴路径，也不会漏掉任何关键确认项。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §3 -->
+  <section id="s3">
+    <div class="section-eyebrow">03 · Workflow</div>
+    <h2 class="section-title">接入流程总览</h2>
+    <p class="section-lede">从需求确认到提测，一共 6 步。其中产品 / 运营负责 ①②③⑤⑥，开发只负责 ④。提测通过后再走正常发布流程上线。</p>
+
+    <div class="card">
+      <div class="flow">
+        <div class="flow-pill">
+          <span class="num">1</span>
+          <div><div class="who-tag">产品 / 运营</div><div class="what">与 AI 通过 skill / 文档对齐需求</div></div>
+        </div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-pill">
+          <span class="num">2</span>
+          <div><div class="who-tag">产品 / 运营</div><div class="what">交付 6 项必备信息（<a href="#s5">第 5 节</a>）</div></div>
+        </div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-pill ops">
+          <span class="num">3</span>
+          <div><div class="who-tag">运营</div><div class="what">在 CMS 配置云控数据（CMS key + value）</div></div>
+        </div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-pill dev">
+          <span class="num">4</span>
+          <div><div class="who-tag">开发</div><div class="what">按开发指南接入注册表 + Panel</div></div>
+        </div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-pill ops">
+          <span class="num">5</span>
+          <div><div class="who-tag">运营</div><div class="what">在创作工具聚合页 CMS 配置入口卡片</div></div>
+        </div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-pill go">
+          <span class="num">6</span>
+          <div><div class="who-tag">产品 / 运营</div><div class="what">按 <a href="#s6">验收清单</a> 验证功能 → 提测 🚀</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §4 -->
+  <section id="s4">
+    <div class="section-eyebrow">04 · Entry Setup</div>
+    <h2 class="section-title">配置聚合页入口</h2>
+    <p class="section-lede">工具开发完成后，前端路由 <code>/tools/:tool_type</code> 已经通配——但用户从哪里点进来，由聚合页 CMS 决定。<strong>新工具接入时你只需填一个字段：「跳转目标」</strong>，其余字段（卡片标题 / 封面图 / 分类等）已经由产品 / 设计在工具卡片配置时统一配好。</p>
+
+    <div class="callout callout-tip">
+      <div class="ico">i</div>
+      <div>
+        <strong>实际只填一项：跳转目标 = 工具 key</strong>
+        <p style="margin-top:4px;">下表中带 <span style="color:var(--red);font-weight:700;">★</span> 的字段虽然都是表单必填项，但<strong>除了「跳转目标」</strong>外，其它字段（工具名称、分类、封面图、排序、状态等）都已经在工具上架前由产品 / 设计配好，<strong>你只要核对 + 把跳转目标填成新工具的 <code>tool_type</code> 字符串即可</strong>。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📝 你只需要填「跳转目标」</h3>
+      <p>进入 CMS 后台 → 「创作工具聚合页」 → 新增 / 编辑工具，在表单里：</p>
+      <ul style="margin:10px 0 14px 22px;color:var(--fg-secondary);">
+        <li>「<strong>跳转类型</strong>」选「<strong>站内路由</strong>」</li>
+        <li>「<strong>跳转目标</strong>」填工具 key（<code>tool_type</code>）字符串，例如 <code>viral_replicate</code>。<strong>不带</strong> <code>/tools/</code> 前缀</li>
+        <li>其余字段（工具名称 / 分类 / 封面图 / 排序 / 状态等）按产品 / 设计提供的内容核对即可，不需要你逐一配置</li>
+      </ul>
+    </div>
+
+    <figure>
+      <img src="https://p0.ssl.qhimg.com/t110b9a9301d222f51df6ea9bda.png" alt="图一：CMS 编辑工具弹窗">
+      <figcaption><strong>图一</strong> · CMS「编辑工具」弹窗。红框为「跳转目标」字段，<strong>填工具 key（如 <code>viral_replicate</code>）即可</strong>，前端会自动拼成 <code>/tools/viral_replicate</code> 路由。点击图片可放大。</figcaption>
+    </figure>
+
+    <div class="callout callout-warn">
+      <div class="ico">!</div>
+      <div>
+        <strong>注意事项</strong>
+        <ul>
+          <li>「跳转目标」必须与开发注册的 <code>tool_type</code> <strong>完全一致</strong>（区分大小写、下划线），否则点击卡片会进入空白页 / 404。</li>
+          <li>「跳转类型」务必选「<strong>站内路由</strong>」；选「外部链接」会跳到外部 URL，不走 <code>/tools/:tool_type</code> 路由。</li>
+          <li>工具一旦上线，<strong><code>tool_type</code> 不建议修改</strong>——它同时是路由段、任务筛选 scene 和用户已生成任务的归属字段。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- §5 -->
+  <section id="s5">
+    <div class="section-eyebrow">05 · Deliverables</div>
+    <h2 class="section-title">给 AI / 开发的必交付信息</h2>
+    <p class="section-lede">下面 6 项是产品 / 运营在使用 skill 时要主动提供给 AI 的物料。AI 会逐项确认，缺一项不能开始接入。</p>
+
+    <div class="card">
+      <h3>📦 必交付物料清单</h3>
+      <div class="data-table">
+        <table>
+          <thead><tr><th class="num-cell">#</th><th>信息</th><th>示例</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td class="num-cell">1</td><td><strong>工具 key（<code>tool_type</code>）</strong></td><td><code>image_translate</code></td><td>路由 / 任务筛选 / 代码常量；建议 <code>snake_case</code>，上线后不可改</td></tr>
+            <tr><td class="num-cell">2</td><td><strong>工具展示名</strong></td><td>图片翻译</td><td>聚合页卡片标题、编辑区 Header、任务列表标题</td></tr>
+            <tr><td class="num-cell">3</td><td><strong>CMS key</strong></td><td><code>namivideo_image_translate</code></td><td>与 <code>tool_type</code> 一一对应，命名 <code>namivideo_{语义}</code></td></tr>
+            <tr><td class="num-cell">4</td><td><strong>CMS value 数据结构</strong></td><td>JSON 草案（见 5.1）</td><td>使用指南、空状态、模型 / 计费、工具专属字段</td></tr>
+            <tr><td class="num-cell">5</td><td><strong>Figma 设计稿链接</strong></td><td><code>figma.com/...?node-id=xxx</code></td><td>必须定位到<strong>编辑区左侧面板节点</strong>；交付后 AI 会比对已有交互组件——<strong>命中则直接复用</strong>，未命中再与你确认交互细节</td></tr>
+            <tr><td class="num-cell">6</td><td><strong>介质类型声明</strong></td><td>生图 / 生视频</td><td>一句话即可，决定结果区展示形态、提交 API、计费方式与 ConfigModal 形态</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip" style="margin-top:14px;">
+        <div class="ico">🎨</div>
+        <div>
+          <strong>Figma 交付后 AI 会自动判断是否需要新增交互</strong>
+          <p style="margin-top:4px;">交付 Figma 链接后，AI 会比对设计稿与现有创作工具的交互组件库：</p>
+          <ul>
+            <li><strong>命中已有交互组件</strong>（如模特选择、模板池、语言网格、查看更多抽屉等）→ 直接复用，无需新增 UI 开发。</li>
+            <li><strong>未命中现有组件</strong> → AI 会就交互细节（数据结构、筛选维度、选中态、空态文案等）与你逐项确认后再开发。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>5.1 云控 <code>value</code> 数据结构</h3>
+      <div class="callout callout-tip">
+        <div class="ico">💡</div>
+        <div><strong>不需要你设计解析逻辑</strong><p style="margin-top:4px;">使用指南、空状态素材、CMS 公共字段全部由现有云控通用组件渲染——你只需要把内容按下面结构填进 CMS 即可。</p></div>
+      </div>
+
+      <h4>A. 公共字段（所有工具共用，结构固定）</h4>
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="label">CMS · value · public-fields.json</span>
+          <button class="copy-btn">复制</button>
+        </div>
+<pre>{
+  <span class="key">"usage_guide_url"</span>: <span class="str">""</span>,            <span class="cmt">// 「使用指南」弹窗的图文/视频链接</span>
+  <span class="key">"usage_guide_title"</span>: <span class="str">""</span>,
+  <span class="key">"usage_guide_description"</span>: <span class="str">""</span>,
+  <span class="key">"empty_state_material"</span>: {         <span class="cmt">// 任务列表为空时展示的素材</span>
+    <span class="key">"title"</span>: <span class="str">"生成你的第一张图片"</span>,
+    <span class="key">"image_urls"</span>: [],               <span class="cmt">// 轮播图</span>
+    <span class="key">"media_type"</span>: <span class="str">"video"</span>,          <span class="cmt">// "image" | "video"</span>
+    <span class="key">"video_url"</span>: <span class="str">""</span>
+  },
+  <span class="key">"generation"</span>: {
+    <span class="key">"model_id"</span>: <span class="str">"nami-xxx"</span>,
+    <span class="key">"prompt_template"</span>: <span class="str">"..."</span>,
+    <span class="key">"cost"</span>: { <span class="str">"1k"</span>: 1.0, <span class="str">"2k"</span>: 1.0, <span class="str">"4k"</span>: 2.0 },  <span class="cmt">// 计费矩阵</span>
+    <span class="key">"params"</span>: { <span class="cmt">/* 工具专属配置 */</span> }
+  }
+}</pre>
+      </div>
+
+      <h4>B. 工具专属字段（与开发约定的业务字段）</h4>
+      <div class="pills">
+        <span class="pill blue">图片翻译 · <code>languages</code> + <code>max_language_count</code></span>
+        <span class="pill purple">服装上身 · <code>mannequins</code> + 性别/年龄/体型筛选</span>
+        <span class="pill orange">商品替换 · <code>templates</code> + <code>template_categories</code> + 时长策略</span>
+      </div>
+
+      <div class="callout callout-danger">
+        <div class="ico">⊘</div>
+        <div><strong>无数据不兜底</strong><p style="margin-top:4px;">云控未配置 / 拉取失败 / 字段为空时，前端不会用 fallbacks 硬编码假数据——对应区域会展示空态或禁用生成按钮。<strong>CMS 数据务必在上线前配齐</strong>。</p></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>5.2 实战示例：商品替换工具的 prompt</h3>
+      <p>下图是「商品替换」工具接入时，运营在 Claude Code 中调用 <code>/namivideo-creation-tools</code> 后提供给 AI 的真实 prompt——把第 5 节的 6 项必交付信息一次性写清楚甩给 AI，AI 即可按规范开始接入：</p>
+      <figure>
+        <img src="https://p3.ssl.qhimg.com/t110b9a9301430c2cd2c86d2b7e.png" alt="图三：商品替换工具调用 skill 时提供给 AI 的 prompt 示例">
+        <figcaption><strong>图三</strong> · 商品替换工具实战 prompt 示例。点击图片可放大查看。</figcaption>
+      </figure>
+    </div>
+
+    <div class="card">
+      <h3>5.3 怎么参考这个示例写自己的 prompt</h3>
+      <p>对照图三的结构，把你自己的工具按下面顺序在一段话里说清楚即可：</p>
+      <ul style="margin:10px 0 0 22px;color:var(--fg-secondary);">
+        <li>「我要接入一个新工具：<strong>{工具展示名}</strong>，<code>tool_type = {工具 key}</code>」</li>
+        <li>「CMS key 是 <code>{namivideo_xxx}</code>，value 数据结构如下……」（贴 JSON 草案 / 截图 / CMS 链接）</li>
+        <li>「Figma 链接：<code>{figma.com/...?node-id=xxx}</code>」</li>
+        <li>「这个工具是<strong>生图 / 生视频</strong>工具」</li>
+      </ul>
+      <div class="callout callout-tip" style="margin-top:14px;">
+        <div class="ico">💡</div>
+        <div><strong>不用一次写全：</strong>哪怕你只贴出工具名 + tool_type，AI 也会按门禁机制反问剩下几项；只是一次性写全，能少几轮来回，更快进入开发。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §6 -->
+  <section id="s6">
+    <div class="section-eyebrow">06 · Verification</div>
+    <h2 class="section-title">上线前验收清单</h2>
+    <p class="section-lede">开发自测通过后，由产品 / 运营逐项验收。点击每一项可勾选，进度自动保存在本地浏览器。</p>
+
+    <div class="check-progress">
+      <span class="label"><span class="ico">✓</span>验收进度</span>
+      <div class="bar"><div class="bar-inner" id="check-bar"></div></div>
+      <span class="count" id="check-count">0 / 21</span>
+    </div>
+
+    <div class="card">
+      <h3>🚪 6.1 入口与导航</h3>
+      <ul class="checklist">
+        <li><span class="box"></span><span class="text">聚合页能看到新工具卡片，标题 / 缩略图 / 排序符合预期</span></li>
+        <li><span class="box"></span><span class="text">点击卡片进入 <code>/tools/{tool_type}</code> 编辑页（无空白页 / 404）</span></li>
+        <li><span class="box"></span><span class="text">编辑页 Header 显示的工具名与 CMS 配置一致</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>✏️ 6.2 编辑区</h3>
+      <ul class="checklist">
+        <li><span class="box"></span><span class="text">编辑区布局与 Figma 设计稿一致（间距、文案、控件位置）</span></li>
+        <li><span class="box"></span><span class="text">「使用指南」入口可点开，文案 / 配图 / 视频与 CMS 一致</span></li>
+        <li><span class="box"></span><span class="text">工具专属交互（语言网格 / 模特选择 / 模板池 / 抽屉等）符合设计稿</span></li>
+        <li><span class="box"></span><span class="text">必填项未填 / 上传中时，「立即生成」按钮<strong>正确置灰</strong></span></li>
+        <li><span class="box"></span><span class="text">积分预估数字与云控 <code>cost</code> 矩阵对得上</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>⚡️ 6.3 生成与结果</h3>
+      <ul class="checklist">
+        <li><span class="box"></span><span class="text">点击「立即生成」能正常发起任务，未登录会弹出登录 / 会员收银台</span></li>
+        <li><span class="box"></span><span class="text">结果区任务列表的<strong>介质类型正确</strong>（生图展示图片，生视频展示视频）</span></li>
+        <li><span class="box"></span><span class="text">任务列表为空时，<strong>空状态素材</strong>与 CMS 配置一致</span></li>
+        <li><span class="box"></span><span class="text">任务卡参数行展示（比例 / 清晰度 / 张数 / 时长等）符合预期</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>🔄 6.4 重新编辑 / 再次生成 / 失败重试</h3>
+      <ul class="checklist">
+        <li><span class="box"></span><span class="text">「重新编辑」能正确回填之前的素材与选项</span></li>
+        <li><span class="box"></span><span class="text">「再次生成」能用相同参数发起新任务</span></li>
+        <li><span class="box"></span><span class="text">失败任务「重试」能带原任务 id 重新提交</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>🛡 6.5 云控容错</h3>
+      <ul class="checklist">
+        <li><span class="box"></span><span class="text">故意把 CMS 必填字段清空，前端展示空态 / 禁用而非假数据</span></li>
+        <li><span class="box"></span><span class="text">test / pre / prod 三环境 CMS key 都已配置</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>🚀 6.6 多环境与发布</h3>
+      <ul class="checklist">
+        <li><span class="box"></span><span class="text">prod 环境 CMS 数据已配齐 + 聚合页卡片已在 prod 上架</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>♻️ 6.7 接入后回流（让规范更厚）</h3>
+      <p>验收完成、提测通过后，问自己三个问题——只要有任何一个回答「是」，就反馈给开发把它沉淀进 skill / 接入文档：</p>
+      <ul class="checklist">
+        <li><span class="box"></span><span class="text">这次有没有踩到现有规范<strong>没覆盖</strong>的坑？（→ 加进「常见注意点」）</span></li>
+        <li><span class="box"></span><span class="text">有没有遇到 AI <strong>照规范也写错</strong>的地方？（→ 在 Review 清单加一条检查项）</span></li>
+        <li><span class="box"></span><span class="text">这次的提交参数 / 云控字段，跟现有工具差异表对得上吗？（→ 在差异表加一列）</span></li>
+      </ul>
+      <div class="callout callout-tip" style="margin-top:14px;">
+        <div class="ico">📈</div>
+        <div><strong>复利来源：</strong>每接入一个新工具，规范就更厚一点；下一个工具的接入成本就更低、AI 更熟、出错更少。这是这套接入框架长期价值的核心。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §6.5 Review 保障 -->
+  <section id="s65">
+    <div class="section-eyebrow">06.5 · Auto Review</div>
+    <h2 class="section-title">AI 自动 Review 保障</h2>
+    <p class="section-lede">AI 产出代码后，会按 skill 内置的 <strong>Review 清单</strong>逐项自查，确保<strong>新增工具不会改动到其它已上线的功能</strong>。这是为什么产品 / 运营可以放心提测——每个对接都有一道架构红线兜底。</p>
+
+    <div class="card">
+      <h3>🛡 模块边界 Review · 改动只落在新工具自己的目录</h3>
+      <p>新工具的代码必须收敛在 <code>src/features/creation-tools/</code> 下；模块外只允许极少量"白名单"改动。</p>
+      <div class="data-table">
+        <table>
+          <thead><tr><th>检查项</th><th>红 / 绿</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td>新增的 Panel / domain / 组件</td><td><span class="pill green">✓ 允许</span></td><td>都在 <code>creation-tools/</code> 内独立目录</td></tr>
+            <tr><td>修改 <code>router/index.tsx</code></td><td><span class="pill" style="background:rgba(255,59,48,.12);color:var(--red);">✗ 禁止</span></td><td>路由已通配 <code>/tools/:tool_type</code>，不需要改</td></tr>
+            <tr><td>修改任意已有工具的 Panel / domain</td><td><span class="pill" style="background:rgba(255,59,48,.12);color:var(--red);">✗ 禁止</span></td><td>每个工具完全独立，不许"复用 + if 判断"</td></tr>
+            <tr><td>在 <code>GenerateResult</code> / <code>home</code> 等模块写工具分支</td><td><span class="pill" style="background:rgba(255,59,48,.12);color:var(--red);">✗ 禁止</span></td><td>结果区已表驱动，不允许 <code>if (toolType)</code></td></tr>
+            <tr><td>修改共享 Store 类定义 / 默认行为</td><td><span class="pill" style="background:rgba(255,59,48,.12);color:var(--red);">✗ 禁止</span></td><td>避免影响所有工具的提交 / 回填链路</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🏗 架构约束 Review · 是否符合接入规范</h3>
+      <ul class="checklist" style="pointer-events:none;">
+        <li><span class="box"></span><span class="text"><code>tool_type</code> 是唯一标识：路由、CMS key、任务 scene、筛选条件全对得上</span></li>
+        <li><span class="box"></span><span class="text">已在工具注册表登记完整六件套（CMS key / 介质类型 / 解析 / 回填 / 提交 / 任务卡）</span></li>
+        <li><span class="box"></span><span class="text">介质类型与提交 API、列表刷新参数三者保持一致（生图 ↔ image / 生视频 ↔ video）</span></li>
+        <li><span class="box"></span><span class="text">公共字段（使用指南 / 空状态 / 计费）走通用解析，未在 Panel 重复实现</span></li>
+        <li><span class="box"></span><span class="text">Panel 使用统一 Hook + Shell 骨架，未自己重新拉云控</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>📤 提交参数 / 云控 Review · 数据契约不会写错</h3>
+      <ul class="checklist" style="pointer-events:none;">
+        <li><span class="box"></span><span class="text">提交时 <code>scene</code> 与 <code>tool_type</code> 一致；列表刷新参数与介质类型一致</span></li>
+        <li><span class="box"></span><span class="text">参考素材经合法性过滤，上传中素材不会被提交</span></li>
+        <li><span class="box"></span><span class="text">Prompt 占位符在 domain 层展开，不在 UI 散落拼接</span></li>
+        <li><span class="box"></span><span class="text">任务的 <code>kwargs</code> 能从历史任务回填，「重新编辑」可还原编辑态</span></li>
+        <li><span class="box"></span><span class="text">失败 / 取消任务重试时携带原任务 id</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>⛑ 云控容错 Review · 无数据不兜底</h3>
+      <p>这条是产品 / 运营最该关心的红线——AI 不会用假数据填空：</p>
+      <ul class="checklist" style="pointer-events:none;">
+        <li><span class="box"></span><span class="text"><strong>未新增 fallbacks 文件</strong>，云控解析没有硬编码业务数据</span></li>
+        <li><span class="box"></span><span class="text">云控列表为空时展示空态 / 不可选，而不是假数据</span></li>
+        <li><span class="box"></span><span class="text">云控必填项缺失时，「立即生成」按钮禁用或给出明确提示</span></li>
+        <li><span class="box"></span><span class="text">数量 / 上限取自云控（如 <code>max_language_count</code>），不写魔法数</span></li>
+        <li><span class="box"></span><span class="text">列表项状态非 active 会被自动过滤</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>👤 会员 / 登录 / 积分 Review · 与已上线工具完全一致</h3>
+      <ul class="checklist" style="pointer-events:none;">
+        <li><span class="box"></span><span class="text">未登录点击生成 → 弹出会员 / 登录收银台</span></li>
+        <li><span class="box"></span><span class="text">提交中防重复点击（生图 / 生视频各自独立 submitting 状态）</span></li>
+        <li><span class="box"></span><span class="text">Footer 的积分预估使用统一估价函数</span></li>
+        <li><span class="box"></span><span class="text">未自造一套会员 / 积分 / 登录流程</span></li>
+      </ul>
+    </div>
+
+    <div class="callout callout-success">
+      <div class="ico">✓</div>
+      <div>
+        <strong>所有 Review 项都通过后，AI 才会输出 PR 描述模板</strong>
+        <p style="margin-top:4px;">PR 中会附带：模块边界结论、架构约束勾叠、提交契约勾叠、是否触及已有工具（若触及附用户确认记录）、<code>tsc --noEmit</code> 类型检查结果、手工链路回归记录。Reviewer 与产品 / 运营都可以基于这份 PR 描述快速判断是否安全合并。</p>
+      </div>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="ico">!</div>
+      <div>
+        <strong>这不是替代你的验收</strong>
+        <p style="margin-top:4px;">AI Review 只能保障"代码层面没有越界 / 没有破坏架构红线"；用户实际看到的卡片样式、生成效果、文案细节还是要靠 <a href="#s6">第 6 节验收清单</a> 走一遍。两者配合才完整。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §7 -->
+  <section id="s7">
+    <div class="section-eyebrow">07 · FAQ</div>
+    <h2 class="section-title">常见问答</h2>
+    <p class="section-lede">点击展开 / 收起。</p>
+
+    <div class="accordion">
+      <details>
+        <summary>Q1 · <code>tool_type</code> 上线后能改吗？</summary>
+        <div class="body">不建议。它同时是路由段、任务筛选 <code>scene</code>、用户已生成任务的归属。改名会导致用户历史任务在新工具下检索不到。</div>
+      </details>
+      <details>
+        <summary>Q2 · CMS 没配某个字段会怎样？</summary>
+        <div class="body">对应区域展示空态或禁用，不会用假数据兜底。这是为了避免「上线后用户看到假语言 / 假模特」。所以 CMS 数据务必配齐再上线。</div>
+      </details>
+      <details>
+        <summary>Q3 · 我能否复用别的工具的 Panel，加几个 if 判断？</summary>
+        <div class="body">不能。每个 <code>tool_type</code> 都是独立 Panel + 独立 domain，新工具走独立模块。这条是架构硬约束（开发文档 §15.5.0）。</div>
+      </details>
+      <details>
+        <summary>Q4 · 使用指南、空状态、登录 / 会员 / 积分要单独开发吗？</summary>
+        <div class="body">不需要。这些是平台通用能力，已经统一沉淀。运营只需在云控里把内容填好。</div>
+      </details>
+      <details>
+        <summary>Q5 · 生图改成生视频（或反之）能改吗？</summary>
+        <div class="body">理论上可以但代价大——介质类型决定了提交 API、结果区展示、计费方式、ConfigModal 形态。强烈建议在 <a href="#s5">第 5 节</a> 确认阶段就定下来。</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- §8 -->
+  <section id="s8">
+    <div class="section-eyebrow">08 · Resources</div>
+    <h2 class="section-title">相关文档</h2>
+    <p class="section-lede">三份文档各有受众。这份偏产品 / 运营视角，开发同学请直接看开发指南。</p>
+
+    <div class="nav-cards">
+      <a class="nav-card" href="./TOOL_TYPE_INTEGRATION_GUIDE.md">
+        <div class="nc-icon">🛠</div>
+        <div class="nc-tag">For 开发</div>
+        <div class="nc-title">工具接入开发指南</div>
+        <div class="nc-desc">注册表 / Domain / Panel / 验收 完整接入流程</div>
+        <span class="nc-arrow">阅读 →</span>
+      </a>
+      <a class="nav-card" href="../../../../skill-hub/dev/META/INSTALL.md">
+        <div class="nc-icon" style="background:linear-gradient(135deg,var(--orange),var(--pink));">🪄</div>
+        <div class="nc-tag">For 全员</div>
+        <div class="nc-title">Skill 安装说明</div>
+        <div class="nc-desc">namivideo-creation-tools 安装步骤</div>
+        <span class="nc-arrow">阅读 →</span>
+      </a>
+      <a class="nav-card" href="./README.md">
+        <div class="nc-icon" style="background:linear-gradient(135deg,var(--green),var(--teal));">📦</div>
+        <div class="nc-tag">For 开发</div>
+        <div class="nc-title">模块 README</div>
+        <div class="nc-desc">creation-tools 模块自身说明</div>
+        <span class="nc-arrow">阅读 →</span>
+      </a>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  © 创作工具接入指南 · 产品 / 运营版 · 配合 <a href="./TOOL_TYPE_INTEGRATION_GUIDE.md">开发指南</a> 使用
+</footer>
+
+<div class="lightbox" id="lightbox"><img id="lightbox-img" alt=""></div>
+
+<script>
+  // Segmented tabs
+  document.querySelectorAll('.seg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.seg;
+      btn.parentElement.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.seg-panel').forEach(p => p.classList.toggle('active', p.id === target));
+    });
+  });
+
+  // Copy buttons
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const code = btn.closest('.terminal').querySelector('pre').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const orig = btn.innerText;
+        btn.innerText = '已复制';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.innerText = orig; btn.classList.remove('copied'); }, 1500);
+      });
+    });
+  });
+
+  // Checklist with localStorage persistence (only §6 acceptance list, not §6.5 readonly review)
+  const STORAGE_KEY = 'tool-onboarding-pm-checklist-apple';
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  const items = document.querySelectorAll('#s6 .checklist li');
+  items.forEach((li, i) => {
+    if (saved[i]) li.classList.add('done');
+    li.addEventListener('click', () => {
+      li.classList.toggle('done');
+      saved[i] = li.classList.contains('done');
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      updateProgress();
+    });
+  });
+  function updateProgress() {
+    const done = [...items].filter(li => li.classList.contains('done')).length;
+    const total = items.length;
+    const pct = total ? (done / total * 100) : 0;
+    document.getElementById('check-bar').style.width = pct + '%';
+    document.getElementById('check-count').innerText = `${done} / ${total}`;
+  }
+  updateProgress();
+
+  // Lightbox
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  document.querySelectorAll('figure img').forEach(img => {
+    img.addEventListener('click', () => { lbImg.src = img.src; lb.classList.add('open'); });
+  });
+  lb.addEventListener('click', () => lb.classList.remove('open'));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
+
+  // Sticky nav active section + progress
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.topnav-links a');
+  function onScroll() {
+    const y = window.scrollY + 80;
+    let active = sections[0]?.id;
+    sections.forEach(s => { if (s.offsetTop <= y) active = s.id; });
+    navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + active));
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    document.getElementById('progress').style.width = (window.scrollY / docH * 100) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+<script src="../shared/header.js"></script>
+</body>
+</html>
