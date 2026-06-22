@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Native 前端开发工作法 · 分享</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg-0: #06060f;
+    --bg-1: #0c0c1d;
+    --bg-2: #14142b;
+    --line: rgba(120, 130, 200, 0.18);
+    --text: #e7e7ff;
+    --text-dim: #9aa0c5;
+    --text-mute: #6c7299;
+    --neon-1: #7c5cff;   /* 紫 */
+    --neon-2: #00e5ff;   /* 青 */
+    --neon-3: #ff4ecd;   /* 粉 */
+    --neon-4: #5cffd2;   /* 薄荷 */
+    --neon-5: #ffd166;   /* 黄 */
+    --danger: #ff5577;
+    --ok: #5cffd2;
+    --shadow-neon: 0 0 24px rgba(124, 92, 255, 0.45);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg-0); color: var(--text); font-family: 'Noto Sans SC', system-ui, -apple-system, sans-serif; line-height: 1.7; scroll-behavior: smooth; }
+  code, pre, .mono { font-family: 'JetBrains Mono', Menlo, Consolas, monospace; }
+  a { color: var(--neon-2); text-decoration: none; border-bottom: 1px dashed rgba(0, 229, 255, 0.4); transition: all .2s; }
+  a:hover { color: var(--neon-3); border-bottom-color: var(--neon-3); text-shadow: 0 0 8px rgba(255, 78, 205, 0.6); }
+
+  /* === 背景星空 + 流光 === */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: -2;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(124, 92, 255, 0.25), transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(0, 229, 255, 0.18), transparent 55%),
+      radial-gradient(ellipse at 50% 50%, rgba(255, 78, 205, 0.10), transparent 60%),
+      var(--bg-0);
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 80%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 40%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 60%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 30%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 70%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 90%, #fff 0%, transparent 100%);
+    background-size: 800px 800px;
+    opacity: 0.4;
+    animation: drift 120s linear infinite;
+  }
+  @keyframes drift {
+    from { background-position: 0 0; }
+    to { background-position: 800px 800px; }
+  }
+
+  /* === Hero === */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 60px 20px;
+    overflow: hidden;
+  }
+  .hero .glow-ring {
+    position: absolute;
+    width: 800px; height: 800px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, var(--neon-1), var(--neon-2), var(--neon-3), var(--neon-1));
+    filter: blur(120px);
+    opacity: 0.35;
+    animation: rotate 30s linear infinite;
+    z-index: -1;
+  }
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .hero .tag {
+    display: inline-block;
+    padding: 6px 18px;
+    border: 1px solid rgba(0, 229, 255, 0.4);
+    border-radius: 999px;
+    background: rgba(0, 229, 255, 0.08);
+    color: var(--neon-2);
+    font-size: 13px;
+    letter-spacing: 4px;
+    margin-bottom: 30px;
+    backdrop-filter: blur(8px);
+  }
+  .hero h1 {
+    font-size: clamp(40px, 7vw, 96px);
+    margin: 0 0 20px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #fff 20%, var(--neon-2) 50%, var(--neon-3) 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    text-shadow: 0 0 60px rgba(124, 92, 255, 0.3);
+  }
+  .hero .subtitle {
+    font-size: clamp(16px, 2vw, 22px);
+    color: var(--text-dim);
+    max-width: 720px;
+    margin: 0 auto 40px;
+    line-height: 1.8;
+  }
+  .hero .subtitle b { color: var(--neon-5); font-weight: 600; }
+  .hero .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--neon-1), var(--neon-3));
+    color: #fff;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    border: none;
+    box-shadow: var(--shadow-neon);
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    text-decoration: none;
+  }
+  .hero .cta:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(255, 78, 205, 0.7); border-bottom: none; }
+  .hero .meta { margin-top: 50px; color: var(--text-mute); font-size: 13px; letter-spacing: 2px; }
+  .hero .meta span { color: var(--neon-4); }
+
+  .scroll-hint {
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    color: var(--text-mute); font-size: 12px; letter-spacing: 4px;
+    animation: bob 2s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translate(-50%, 0); opacity: .6; }
+    50% { transform: translate(-50%, 10px); opacity: 1; }
+  }
+
+  /* === Layout === */
+  .layout {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 80px 24px 120px;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 60px;
+  }
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; gap: 30px; padding: 60px 16px; }
+    .nav { position: relative !important; top: 0 !important; }
+  }
+
+  /* === Nav === */
+  .nav {
+    position: sticky; top: 30px;
+    align-self: start;
+    padding: 24px 20px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(20, 20, 43, 0.6);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+  .nav h3 {
+    margin: 0 0 16px;
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+  }
+  .nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    color: var(--text-dim);
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 4px;
+    font-size: 14px;
+    transition: all .2s;
+  }
+  .nav a .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--text-mute); transition: all .2s;
+  }
+  .nav a:hover { background: rgba(124, 92, 255, 0.1); color: var(--text); }
+  .nav a:hover .dot { background: var(--neon-2); box-shadow: 0 0 8px var(--neon-2); }
+  .nav a.active {
+    background: linear-gradient(90deg, rgba(124, 92, 255, 0.2), transparent);
+    color: var(--neon-3);
+    border-left: 2px solid var(--neon-3);
+    padding-left: 14px;
+  }
+  .nav a.active .dot { background: var(--neon-3); box-shadow: 0 0 12px var(--neon-3); }
+  .nav .nav-group { margin-top: 6px; }
+  .nav .nav-group-title {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    color: var(--neon-5);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .nav .nav-group-title .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--neon-5); box-shadow: 0 0 8px var(--neon-5); }
+  .nav .nav-sub a {
+    padding-left: 30px;
+    font-size: 13px;
+    position: relative;
+  }
+  .nav .nav-sub a::before {
+    content: '';
+    position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+    width: 6px; height: 1px; background: var(--text-mute);
+  }
+  .nav .nav-sub a.active { padding-left: 32px; }
+
+  /* === Section === */
+  .section { margin-bottom: 80px; scroll-margin-top: 80px; }
+  .section-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 2px;
+    color: var(--neon-2);
+    padding: 4px 10px;
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 4px;
+    background: rgba(0, 229, 255, 0.05);
+    margin-bottom: 16px;
+  }
+  .section h2 {
+    font-size: clamp(28px, 4vw, 42px);
+    margin: 0 0 8px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 30%, var(--neon-4) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .section h3 {
+    font-size: 22px;
+    margin: 40px 0 16px;
+    color: var(--text);
+    position: relative;
+    padding-left: 16px;
+  }
+  .section h3::before {
+    content: '';
+    position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 4px; height: 22px;
+    background: linear-gradient(180deg, var(--neon-1), var(--neon-3));
+    border-radius: 2px;
+  }
+  .section h4 {
+    font-size: 16px;
+    margin: 24px 0 12px;
+    color: var(--neon-5);
+    letter-spacing: 1px;
+  }
+
+  /* === Quote === */
+  .pull-quote {
+    margin: 16px 0 30px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, rgba(124, 92, 255, 0.10), rgba(0, 229, 255, 0.05));
+    border-left: 3px solid var(--neon-1);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 15px;
+  }
+  .pull-quote b { color: var(--neon-5); }
+  .pull-quote.notice {
+    background: linear-gradient(135deg, rgba(255, 209, 102, 0.1), rgba(255, 78, 205, 0.05));
+    border-left-color: var(--neon-5);
+  }
+
+  /* === Table === */
+  .table-wrap { overflow-x: auto; margin: 16px 0 30px; border-radius: 12px; border: 1px solid var(--line); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 600px; }
+  th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th {
+    background: rgba(124, 92, 255, 0.12);
+    color: var(--neon-4);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: sticky; top: 0;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(124, 92, 255, 0.05); }
+  td code { color: var(--neon-2); }
+
+  /* === List === */
+  ul, ol { padding-left: 20px; }
+  li { margin: 8px 0; color: var(--text-dim); }
+  li b, li strong { color: var(--text); }
+
+  /* === Cards Grid === */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 20px 0; }
+  .card {
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(20, 20, 43, 0.8), rgba(12, 12, 29, 0.8));
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    transition: all .3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--neon-1), var(--neon-2), var(--neon-3));
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .card:hover { transform: translateY(-4px); border-color: rgba(124, 92, 255, 0.5); box-shadow: 0 8px 24px rgba(124, 92, 255, 0.2); }
+  .card:hover::before { opacity: 1; }
+  .card .idx {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--neon-2);
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .card .title { font-weight: 700; font-size: 16px; margin-bottom: 8px; color: var(--text); }
+  .card .desc { font-size: 13px; color: var(--text-dim); }
+
+  /* === Prompt Block === */
+  .prompt {
+    margin: 16px 0 30px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(6, 6, 15, 0.9);
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  }
+  .prompt-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    background: linear-gradient(90deg, rgba(124, 92, 255, 0.18), rgba(255, 78, 205, 0.10));
+    border-bottom: 1px solid var(--line);
+  }
+  .prompt-head .name {
+    color: var(--neon-5);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+  .prompt-head .name::before { content: '⚡ '; }
+  .prompt-head .copy {
+    background: rgba(0, 229, 255, 0.1);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    color: var(--neon-2);
+    padding: 4px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all .2s;
+  }
+  .prompt-head .copy:hover { background: var(--neon-2); color: var(--bg-0); }
+  .prompt-head .copy.done { background: var(--ok); color: var(--bg-0); border-color: var(--ok); }
+  .prompt pre {
+    margin: 0;
+    padding: 18px;
+    color: #d8d8ff;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* === Mermaid === */
+  .mermaid-wrap {
+    margin: 24px 0;
+    padding: 24px;
+    background: radial-gradient(ellipse at center, rgba(124, 92, 255, 0.08), rgba(6, 6, 15, 0.9));
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    text-align: center;
+  }
+  .mermaid { background: transparent !important; }
+
+  /* === Bad list === */
+  .bad-list { padding: 0; list-style: none; }
+  .bad-list li {
+    padding: 10px 14px;
+    margin: 8px 0;
+    border-left: 3px solid var(--danger);
+    background: rgba(255, 85, 119, 0.06);
+    border-radius: 6px;
+    color: var(--text-dim);
+  }
+  .bad-list li::before { content: '✕  '; color: var(--danger); font-weight: 700; }
+  .bad-list li code { color: var(--neon-3); }
+
+  .checklist { padding: 0; list-style: none; }
+  .checklist li {
+    padding: 10px 14px;
+    margin: 6px 0;
+    background: rgba(92, 255, 210, 0.05);
+    border: 1px solid rgba(92, 255, 210, 0.15);
+    border-radius: 6px;
+    display: flex; align-items: flex-start; gap: 12px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .checklist li::before {
+    content: '';
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    border: 2px solid var(--neon-4);
+    border-radius: 4px;
+    background: transparent;
+    transition: all .2s;
+    margin-top: 2px;
+  }
+  .checklist li.done { opacity: 0.55; text-decoration: line-through; }
+  .checklist li.done::before { background: var(--neon-4); box-shadow: 0 0 8px var(--neon-4); }
+
+  /* === Step === */
+  .step {
+    margin: 20px 0;
+    padding: 20px 24px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(20, 20, 43, 0.7), rgba(12, 12, 29, 0.7));
+    position: relative;
+  }
+  .step .step-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 12px;
+    background: linear-gradient(90deg, var(--neon-1), var(--neon-3));
+    border-radius: 999px;
+    color: #fff;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 10px;
+  }
+  .step h4 { margin: 0 0 10px; color: var(--text); font-size: 18px; }
+
+  /* === Inline code === */
+  p code, li code, td code { background: rgba(0, 229, 255, 0.08); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+
+  /* === Footer === */
+  footer {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-mute);
+    font-size: 13px;
+    letter-spacing: 2px;
+    border-top: 1px solid var(--line);
+    margin-top: 60px;
+  }
+  footer span { color: var(--neon-4); }
+
+  /* === Toast === */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: linear-gradient(135deg, var(--neon-1), var(--neon-3));
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-size: 14px;
+    opacity: 0; pointer-events: none;
+    transition: all .3s;
+    box-shadow: 0 8px 32px rgba(124, 92, 255, 0.5);
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* === Mobile nav toggle === */
+  .nav-toggle {
+    display: none;
+    position: fixed; bottom: 30px; right: 30px;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--neon-1), var(--neon-3));
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(124, 92, 255, 0.5);
+    z-index: 100;
+    font-size: 20px;
+  }
+  @media (max-width: 960px) {
+    .nav-toggle { display: block; }
+    .nav { display: none; }
+    .nav.open { display: block; position: fixed !important; top: 20px !important; left: 20px; right: 20px; z-index: 99; max-height: 70vh; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============== HERO ============== -->
+<section class="hero">
+  <div class="glow-ring"></div>
+  <div class="tag">AI · NATIVE · FRONTEND</div>
+  <h1>让 AI 把活干漂亮</h1>
+  <p class="subtitle">
+    不讲 "AI 是什么"，只讲 <b>工作法</b>。<br/>
+    把 PRD 变成 Skill 文档，把规范喂给 AI，让 AI 接管理解 → 设计 → 执行 → 验证全链路。
+  </p>
+  <a href="#sec-1" class="cta">开始 →</a>
+  <div class="meta">
+    nami-video-web · <span>React 18</span> · <span>TS 5.6</span> · <span>Vite 6</span> · <span>MobX 6</span> · <span>Antd 6</span>
+  </div>
+  <div class="scroll-hint">SCROLL ↓</div>
+</section>
+
+<!-- ============== MAIN ============== -->
+<div class="layout">
+
+  <!-- Nav -->
+  <aside class="nav" id="nav">
+    <h3>导航</h3>
+    <a href="#sec-1"><span class="dot"></span>01 · 心智模型</a>
+    <a href="#sec-2"><span class="dot"></span>02 · 工作法主线</a>
+    <a href="#sec-3"><span class="dot"></span>03 · 阶段实操</a>
+    <a href="#sec-4"><span class="dot"></span>04 · 案例演练</a>
+    <a href="#sec-5"><span class="dot"></span>05 · 沉淀复用</a>
+    <div class="nav-group">
+      <div class="nav-group-title"><span class="dot"></span>🧰 工具分享</div>
+      <div class="nav-sub">
+        <a href="#sec-tool-codegraph"><span class="dot"></span>Codegraph</a>
+      </div>
+    </div>
+    <a href="#sec-kit"><span class="dot"></span>📋 一键开工清单</a>
+    <a href="#sec-refs"><span class="dot"></span>📚 关联文档</a>
+  </aside>
+
+  <main>
+
+    <!-- ============== 块 1 ============== -->
+    <section class="section" id="sec-1">
+      <div class="section-tag">// CHAPTER 01</div>
+      <h2>心智模型</h2>
+      <div class="pull-quote"><b>一句话</b>：AI Native 不是让 AI 替你写代码，而是让 AI 接管「理解 → 设计 → 执行 → 验证」的全链路，你做边界与品味的把关者。</div>
+
+      <h3>传统 vs AI Native</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>维度</th><th>传统流程</th><th>AI Native 流程</th></tr></thead>
+          <tbody>
+            <tr><td>起点</td><td>拿到 PRD 直接动手写代码</td><td>拿到 PRD 先让 AI 做信息抽取 + 出开发文档</td></tr>
+            <tr><td>设计</td><td>脑内构思 / 口头对齐</td><td>Plan 文档作为可被审阅的中间产物</td></tr>
+            <tr><td>执行</td><td>人写每一行</td><td>AI 按 Plan 执行，人 review diff</td></tr>
+            <tr><td>验证</td><td>自己点页面</td><td>AI 跑起来 + 人看真实页面 + AI 自审 diff</td></tr>
+            <tr><td>质量门控</td><td>集中在 Code Review</td><td>分散到每一阶段（Plan / 边界 / Diff / 规范 / 沉淀）</td></tr>
+            <tr><td>复用资产</td><td>代码片段、wiki 散文</td><td>Skill 文档、Prompt 模板、MCP 配置</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>四条核心原则</h3>
+      <div class="cards">
+        <div class="card"><div class="idx">01</div><div class="title">Plan First</div><div class="desc">动手前先有 Plan 文档；Plan 没说清的，代码就一定写不对。</div></div>
+        <div class="card"><div class="idx">02</div><div class="title">边界清晰</div><div class="desc">每次任务先声明改动级别 + 触碰文件清单，AI 不许越界。</div></div>
+        <div class="card"><div class="idx">03</div><div class="title">双向验证</div><div class="desc">AI 自审 diff + 人看真实页面，两条腿都要落地。</div></div>
+        <div class="card"><div class="idx">04</div><div class="title">沉淀复用</div><div class="desc">每完成一个任务，问自己：「这次的 prompt / skill / 反例」要不要进资产库？</div></div>
+      </div>
+
+      <div class="pull-quote notice">
+        ⚡ <b>Skill 文档分两层</b>：项目级（<a href="#sec-refs" data-anchor="DEVSKILL">DEVSKILL.md</a>，整个仓库的宪法）+ 模块级（<a href="#sec-refs" data-anchor="draft">docs/tool_guide_skill.md</a>，单模块的接入规范）。两层都备齐，AI 才能按图索骥写出符合项目品味的代码。
+      </div>
+    </section>
+
+    <!-- ============== 块 2 ============== -->
+    <section class="section" id="sec-2">
+      <div class="section-tag">// CHAPTER 02</div>
+      <h2>工作法主线</h2>
+      <div class="pull-quote"><b>一句话</b>：七步流程的关键不在"步多"，在每一步都有清晰的输入和产出，让 AI 不掉链子。</div>
+
+      <h3>流程总览</h3>
+      <div class="mermaid-wrap">
+        <pre class="mermaid">
+flowchart LR
+    A([PRD]):::start --> B([信息梳理])
+    B --> C([Skill / Plan 文档]):::doc
+    C --> D([边界对齐])
+    D --> E([开发 + MCP 协同]):::dev
+    E --> F([功能验证]):::test
+    F --> G{通过?}
+    G -- 否 --> H([修复迭代])
+    H --> F
+    G -- 是 --> I([规范 Review]):::rev
+    I --> J([沉淀产物]):::asset
+
+    classDef start fill:#7c5cff,stroke:#fff,color:#fff;
+    classDef doc fill:#00e5ff,stroke:#fff,color:#06060f;
+    classDef dev fill:#ff4ecd,stroke:#fff,color:#fff;
+    classDef test fill:#ffd166,stroke:#fff,color:#06060f;
+    classDef rev fill:#5cffd2,stroke:#fff,color:#06060f;
+    classDef asset fill:#ff5577,stroke:#fff,color:#fff;
+        </pre>
+      </div>
+
+      <h3>七步四要素表</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>步骤</th><th>输入</th><th>动作</th><th>产出</th><th>卡点信号</th></tr></thead>
+          <tbody>
+            <tr><td>1. PRD 解析</td><td>产品 PRD / 设计稿</td><td>让 AI 抽功能边界、数据流、状态点、异常路径</td><td>结构化需求清单</td><td>AI 输出含"大概""可能" → PRD 不够清晰</td></tr>
+            <tr><td>2. 信息梳理</td><td>需求清单</td><td>标注"已有可复用 / 需要新建"</td><td>复用候选列表</td><td>找不到复用 → 多半没读够代码</td></tr>
+            <tr><td>3. 出 Skill 文档</td><td>需求清单 + 项目规范</td><td>让 AI 出分层设计与文件清单</td><td>Plan / Skill md</td><td>步骤超过 10 步 → 拆任务</td></tr>
+            <tr><td>4. 边界对齐</td><td>Plan 文档</td><td>声明改动级别 + 触碰文件清单</td><td>边界声明</td><td>触碰文件 &gt; 10 → 拆 PR</td></tr>
+            <tr><td>5. 开发执行</td><td>边界声明 + Plan</td><td>AI 按规范写代码，必要时调 MCP</td><td>代码 diff + 修改清单</td><td>diff 含未声明文件 → 立刻 stop</td></tr>
+            <tr><td>6. 验证</td><td>代码 + 真实环境</td><td>跑起来 + AI 自审 + 人验收</td><td>验证报告</td><td>复现不了 bug → 优先补复现路径</td></tr>
+            <tr><td>7. Review &amp; 沉淀</td><td>通过验证的 diff</td><td>对照规范 review，提取可复用片段</td><td>合并 PR + 资产更新</td><td>没沉淀 → 下次还得重写 prompt</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>关于工具</h3>
+      <p>文中所有"AI"指你手上的 AI 编程工具（Claude Code / Codex / 其他）。流程不挑工具，<b>挑工作法</b>。同一个 prompt 在不同工具下的差异远小于"有没有 prompt"的差异。</p>
+    </section>
+
+    <!-- ============== 块 3 ============== -->
+    <section class="section" id="sec-3">
+      <div class="section-tag">// CHAPTER 03</div>
+      <h2>阶段实操</h2>
+      <div class="pull-quote"><b>一句话</b>：四个高价值阶段各配 1 个可复制 prompt，把"靠感觉"变成"靠模板"。</div>
+
+      <!-- 3.1 -->
+      <h3>3.1 PRD → Skill 文档</h3>
+      <p><b>目的</b>：把 PRD 这种"人话文档"转成 AI 能精确执行的"结构化指令"。</p>
+      <p><b>关键动作</b>：</p>
+      <ul>
+        <li>抽取<b>功能边界</b>（做什么 / 不做什么）</li>
+        <li>抽取<b>数据流</b>（前端状态、接口入参出参、跨页面传值）</li>
+        <li>列<b>状态点</b>（loading / empty / error / success / 权限态）</li>
+        <li>列<b>异常路径</b>（接口失败 / 参数缺失 / 鉴权过期）</li>
+        <li>标<b>复用候选</b>（项目里已有的组件、store、service）</li>
+      </ul>
+
+      <div class="prompt">
+        <div class="prompt-head">
+          <span class="name">P1 · 从 PRD 抽取结构化开发信息</span>
+          <button class="copy" data-target="prompt-p1">COPY</button>
+        </div>
+        <pre id="prompt-p1">你是当前项目的资深前端架构师。请阅读下面的 PRD，并按以下结构输出（不要写代码）：
+
+1. 功能边界
+   - 必须实现的核心能力（条目化）
+   - 明确不在本期范围的能力（条目化）
+2. 数据流
+   - 前端状态：哪些字段、谁拥有
+   - 后端接口：方法 / 路径 / 入参 / 出参（PRD 没写的标【需澄清】）
+3. 状态点
+   - loading / empty / error / success / 权限不足 各自的 UI 表现
+4. 异常路径
+   - 列出所有可能失败的环节及兜底策略
+5. 复用候选
+   - 在项目中查找是否已有可复用的：组件 / store / service / 工具函数
+   - 给出文件路径，无则写"未找到"
+
+PRD：
+"""
+&lt;在这里粘贴 PRD&gt;
+"""</pre>
+      </div>
+
+      <p><b>反例</b>：把 PRD 丢给 AI 直接说"实现一下"。结果一定是 AI 自己脑补需求，写出 70% 对、30% 错的代码，review 时全是返工。</p>
+      <p><b>项目内"项目级 Skill 文档"标杆</b>：<a href="#sec-refs" data-anchor="DEVSKILL">DEVSKILL.md</a> —— 它本身就是给 AI 看的项目宪法（分层、命名、允许 / 禁止）。每次让 AI 干活前，告诉它"严格遵循 DEVSKILL.md"。</p>
+
+      <!-- 3.2 -->
+      <h3>3.2 边界定义与改动级别</h3>
+      <p><b>目的</b>：开工前圈地。圈得越清晰，AI 越不容易越界，review 越快。</p>
+      <p><b>三档改动级别</b>：</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>级别</th><th>含义</th><th>AI 授权</th><th>典型场景</th></tr></thead>
+          <tbody>
+            <tr><td><b style="color:var(--ok)">L1 隔离新增</b></td><td>仅新增文件，不改老代码</td><td>自由发挥</td><td>新增 feature、新增组件、新增工具函数</td></tr>
+            <tr><td><b style="color:var(--neon-5)">L2 局部增强</b></td><td>改动 1-3 个老文件，不改公共抽象</td><td>必须先列清单再动手</td><td>给老页面加按钮、给 store 加字段</td></tr>
+            <tr><td><b style="color:var(--danger)">L3 跨模块改造</b></td><td>涉及公共组件 / shared / 路由</td><td>必须出 Plan，分 PR</td><td>改 Layout、改 request 拦截器</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prompt">
+        <div class="prompt-head">
+          <span class="name">P2 · 开发前边界声明</span>
+          <button class="copy" data-target="prompt-p2">COPY</button>
+        </div>
+        <pre id="prompt-p2">任务：&lt;一句话需求&gt;
+改动级别：L1 / L2 / L3（三选一）
+
+请在动手前先输出：
+1. 即将创建的文件路径列表
+2. 即将修改的文件路径列表 + 每个文件的改动要点（一行一句）
+3. 不会触碰的相邻代码（明确说"不改 X，因为 Y"）
+4. 风险点：可能会破坏的现有功能
+
+我确认无误后再说"OK，开始"，你才可以写代码。
+不要先写代码再补声明。</pre>
+      </div>
+
+      <p><b>配套规则</b>：AI 写完后，让它把"实际触碰的文件清单"再贴一次，跟事前声明对账。多一个少一个都要解释。</p>
+
+      <!-- 3.3 -->
+      <h3>3.3 开发与 MCP 协同</h3>
+      <p><b>目的</b>：让 AI 在"知道项目长什么样"的状态下写代码，而不是在真空里编。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>MCP</th><th>何时用</th><th>怎么用</th></tr></thead>
+          <tbody>
+            <tr><td><b>Figma</b></td><td>实现新页面 / 还原设计稿</td><td>给 AI Figma 链接，让它先 <code>get_design_context</code> 拿规格、tokens、组件，再下笔</td></tr>
+            <tr><td><b>Context7</b></td><td>用到某个库的新 API / 不确定语法</td><td>让 AI 先查文档再写，避免幻觉 API</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><b>协同原则</b>：</p>
+      <ul>
+        <li>✅ 让 AI 主动联网：第三方库新版本、设计稿规格、不确定的 API 行为</li>
+        <li>❌ 禁止 AI 联网：业务规则、内部接口约定、PRD 解读 —— 这些只能来自你给的上下文</li>
+      </ul>
+
+      <div class="prompt">
+        <div class="prompt-head">
+          <span class="name">P3 · 开发中产出修改清单与影响面</span>
+          <button class="copy" data-target="prompt-p3">COPY</button>
+        </div>
+        <pre id="prompt-p3">按 Plan 实现这个任务。每完成一个文件的修改，立即在回复里追加一段：
+
+[修改记录]
+- 文件：&lt;路径&gt;
+- 类型：新增 / 修改 / 删除
+- 关键改动：&lt;一句话&gt;
+- 影响面：哪些页面 / 组件 / 调用方会受影响
+
+整个任务结束时，把所有 [修改记录] 汇总成一张表，
+并指出是否有超出最初边界声明的改动。</pre>
+      </div>
+
+      <!-- 3.4 -->
+      <h3>3.4 验证与修复</h3>
+      <p><b>目的</b>：让"通过验证"变成可观察事件，而不是"我觉得应该没问题"。</p>
+      <p><b>双向验证</b>：</p>
+      <ol>
+        <li><b>跑起来看页面</b>：dev server 起来，过一遍主流程 + 至少 1 个边缘场景（空数据、网络失败、权限不足）</li>
+        <li><b>AI 自审 diff</b>：让 AI 对照 <a href="#sec-refs" data-anchor="DEVSKILL">DEVSKILL.md</a> 把自己的代码挑一遍刺</li>
+      </ol>
+
+      <div class="prompt">
+        <div class="prompt-head">
+          <span class="name">P4 · bug 复现 + 二分定位 + 最小修复</span>
+          <button class="copy" data-target="prompt-p4">COPY</button>
+        </div>
+        <pre id="prompt-p4">现象：&lt;具体描述：什么操作后 → 看到什么 → 期望什么&gt;
+复现路径：&lt;步骤 1 / 2 / 3&gt;
+环境：&lt;浏览器 / 账号 / 数据&gt;
+
+请按以下顺序处理：
+1. 先复现该 bug 的最小可执行路径（不要急着改代码）
+2. 提出 2 个最可能的根因假设，按可能性排序
+3. 选最可能的那个，给出**最小**修复 diff（只动必须动的代码，不要顺手重构）
+4. 解释为什么这个修复不会引入回归
+5. 列出建议人工二次验证的 3 个场景
+
+如果 1 步就复现不了 bug，停下来跟我要更多信息，不要硬猜。</pre>
+      </div>
+
+      <div class="prompt">
+        <div class="prompt-head">
+          <span class="name">P5 · guard ：防止 AI 偷偷扩大改动</span>
+          <button class="copy" data-target="prompt-p5">COPY</button>
+        </div>
+        <pre id="prompt-p5">你刚才的 diff 中，有没有任何修改是不属于本次 bug 修复必需的？
+（包括：顺手重命名、顺手抽函数、顺手补 import、顺手改格式）
+如果有，请回滚到只保留必需修改的版本。</pre>
+      </div>
+    </section>
+
+    <!-- ============== 块 4 ============== -->
+    <section class="section" id="sec-4">
+      <div class="section-tag">// CHAPTER 04</div>
+      <h2>案例演练：在创作工具下接入一个新 tool_type</h2>
+      <div class="pull-quote"><b>一句话</b>：用项目里真实存在的"创作工具接入规范"（<a href="#sec-refs" data-anchor="draft">docs/tool_guide_skill.md</a>）做底，演示 AI Native 工作法在一个<b>有完整模块级 skill</b> 的场景下如何高效落地。</div>
+
+      <h3>场景设定</h3>
+      <p>在 <a href="#sec-refs" data-anchor="creation-tools">features/creation-tools/</a> 下接入一个新的 <code>tool_type</code>（业务细节虚化，假定为 <code>your_tool</code>）。模块已有两个参考工具：服装上身（<code>clothing_tryon</code>）、图片翻译（<code>image_translate</code>），且已沉淀完整的接入文档 <a href="#sec-refs" data-anchor="draft">tool_guide_skill.md</a>。</p>
+
+      <h3>这个案例的关键看点</h3>
+      <p>这个模块的"AI Native 收益"不在写代码本身，而在<b>工作法的复利</b>：</p>
+      <ul>
+        <li><b>模块级 skill 已沉淀</b>：架构总览、目录结构、需求确认门禁、接入 8 步、云控契约、自检表、Review 清单 —— <a href="#sec-refs" data-anchor="draft">tool_guide_skill.md</a> 全有</li>
+        <li><b>AI 只要"读懂规范 + 按规范执行"</b>：人不再当翻译，AI 不再当算命先生</li>
+        <li><b>每接入一个新工具，都在打磨这份规范</b>：发现新坑就回写到 tool_guide_skill.md，下一个工具更便宜</li>
+      </ul>
+
+      <!-- step 1 -->
+      <div class="step">
+        <span class="step-tag">STEP 1</span>
+        <h4>需求确认（卡住门禁）</h4>
+        <p><a href="#sec-refs" data-anchor="draft">tool_guide_skill.md §5</a> 已经定好了<b>门禁四件套</b>：<code>tool_type</code> / 工具名称 / 云控 CMS key+value / 编辑区 Figma 链接（含 node-id）。缺一不能动手。</p>
+        <div class="prompt">
+          <div class="prompt-head"><span class="name">让 AI 当门禁守卫，未确认完不许写代码</span><button class="copy" data-target="prompt-s1">COPY</button></div>
+          <pre id="prompt-s1">你的角色是 creation-tools 模块的接入助手。请严格按照 docs/tool_guide_skill.md §5
+的门禁要求，跟我确认四项信息：tool_type / 工具名称 / 云控 CMS key 与 value 草案 / 编辑区 Figma 链接。
+
+规则：
+- 任一项缺失或含糊（例如 tool_type 不是 snake_case、Figma 没有 node-id、value 是空 JSON），
+  回复"缺 X，请补充 Y"，不要继续。
+- 所有四项都明确后，输出一份"§5.6 确认完成检查"表，等我说"OK"才进入 §6 接入。
+- 不要自己脑补任何业务字段。</pre>
+        </div>
+      </div>
+
+      <!-- step 2 -->
+      <div class="step">
+        <span class="step-tag">STEP 2</span>
+        <h4>边界声明（套用模块白名单）</h4>
+        <p><a href="#sec-refs" data-anchor="draft">tool_guide_skill.md §15.3</a> 把"模块内允许新增"和"模块外白名单"写得非常清楚。这一步不再需要 P2 通用模板，而是用<b>模块定制版</b>。</p>
+        <div class="prompt">
+          <div class="prompt-head"><span class="name">基于 tool_guide_skill.md §15.3 白名单的边界声明</span><button class="copy" data-target="prompt-s2">COPY</button></div>
+          <pre id="prompt-s2">按 docs/tool_guide_skill.md §6 的接入步骤接入 your_tool。在写任何代码前先输出：
+
+A. 模块内新增文件清单（应落在 src/features/creation-tools/ 下）
+   - domain/yourTool/ 下五个文件（types/config/buildSubmitParams/hydrateEditor/index）
+   - ui/editor/YourToolEditorPanel.tsx
+   - ui/editor/components/* （工具专属交互组件，列名）
+B. 模块内追加注册（不新增文件，仅追加）
+   - services/types.ts 中 CREATION_TOOL_TYPES 追加项
+   - domain/common/toolRegistry.ts 中 CREATION_TOOL_REGISTRY 追加条目
+   - ui/editor/ToolEditorPanel.tsx 中 TOOL_EDITOR_REGISTRY 追加条目
+C. 模块外允许的改动（参照 §15.3.2 白名单）
+   - 仅 features/video-generation/types/generationApi.ts 的 GenerationRequestKwargs 追加可选字段（如有）
+D. 不会触碰的位置（声明）
+   - router/index.tsx（路由已通配）
+   - 已有工具 Panel/domain（§15.5.0 红线）
+   - GenerateResult、home 等模块（§15.3.3 越界反例）
+
+我确认无误后才能写代码。</pre>
+        </div>
+      </div>
+
+      <!-- step 3 -->
+      <div class="step">
+        <span class="step-tag">STEP 3</span>
+        <h4>分层落地（让 AI 按四件套交付）</h4>
+        <p>tool_guide_skill.md §6 的接入步骤本身就是 AI 的工作清单。</p>
+        <div class="prompt">
+          <div class="prompt-head"><span class="name">按 tool_guide_skill.md §6 的 Step 1~8 执行</span><button class="copy" data-target="prompt-s3">COPY</button></div>
+          <pre id="prompt-s3">按 docs/tool_guide_skill.md §6 的 Step 1~8 执行：
+- Step 1 注册 CREATION_TOOL_TYPES
+- Step 2 在 toolRegistry 注册四件套：cmsKey / adaptConfig / hydrateEditor / buildSubmitParams
+- Step 3 新建 domain/yourTool/ 五个文件
+- Step 4 common 分发（应无需新增分支，§15.4 红线：禁止在 hydrateToolEditor / cloudConfig/index 写 if/else）
+- Step 5 新建 Panel + 注册 TOOL_EDITOR_REGISTRY
+- Step 6 结果区不改
+- Step 7 GenerationRequestKwargs 按需扩展
+- Step 8 路由不改
+
+实现时严格遵循：
+1. DEVSKILL.md 的分层架构与 observer 模式
+2. tool_guide_skill.md §2 的设计原则（tool_type 唯一标识 / 公共字段走 common / 禁止混写 if(toolType) 业务）
+3. 参考已有的 clothingTryOn 与 imageTransform 两套 domain 实现风格
+
+每实现一个文件，追加一段 [修改记录]（用 P3 prompt 格式）。</pre>
+        </div>
+      </div>
+
+      <!-- step 4 -->
+      <div class="step">
+        <span class="step-tag">STEP 4</span>
+        <h4>验证（链路 + 自检）</h4>
+        <p>tool_guide_skill.md §11 的"链路自检"已经替你列好了 6 个必过场景：</p>
+        <ul>
+          <li>编辑页云控加载（无数据走空态，<b>禁止 fallbacks 兜底</b> —— §15.8 红线）</li>
+          <li>首次生成 → 结果区出现任务</li>
+          <li>结果区空状态（视频 / 多图轮播）</li>
+          <li>重新编辑 → 编辑区回填</li>
+          <li>再次生成 / 失败重试</li>
+          <li><code>pnpm tsc --noEmit</code> 无新增错误</li>
+        </ul>
+        <div class="prompt">
+          <div class="prompt-head"><span class="name">让 AI 按 tool_guide_skill.md 链路项做自检</span><button class="copy" data-target="prompt-s4">COPY</button></div>
+          <pre id="prompt-s4">对照 docs/tool_guide_skill.md §11 链路自检 + §15.4 架构约束 + §15.8 云控缺失行为，
+逐项核对刚才的 diff，输出：
+- 每条勾 / 叉 + 文件:行号
+- 任何叉项给出最小修复方案（不要顺手重构，遵守 P5 guard）
+- 特别确认：是否新增了 fallbacks.ts 或硬编码业务数据（§15.8 红线，必为否）</pre>
+        </div>
+      </div>
+
+      <!-- step 5 -->
+      <div class="step">
+        <span class="step-tag">STEP 5</span>
+        <h4>Review（直接套模板）</h4>
+        <p>tool_guide_skill.md §15.10 已经写好了 PR 描述模板，让 AI 填即可。</p>
+        <div class="prompt">
+          <div class="prompt-head"><span class="name">按 tool_guide_skill.md §15.10 模板填 PR 描述</span><button class="copy" data-target="prompt-s5">COPY</button></div>
+          <pre id="prompt-s5">按 docs/tool_guide_skill.md §15.10 的"Review 结论模板"格式，
+基于这次实际改动填一份 PR 描述。所有勾项必须有事实依据（贴文件名 / 命令输出）。</pre>
+        </div>
+      </div>
+
+      <!-- step 6 -->
+      <div class="step">
+        <span class="step-tag">STEP 6</span>
+        <h4>沉淀</h4>
+        <p>接入完成后，问三个问题（每个回答 yes 都要回写 tool_guide_skill.md）：</p>
+        <ol>
+          <li>这次有没有踩到 tool_guide_skill.md <b>没覆盖</b>的坑？→ 加进 §12「常见注意点」</li>
+          <li>有没有遇到 AI <b>照规范也写错</b>的地方？→ 在 §15 的对应小节补一条 Review 检查项</li>
+          <li>这次的提交参数 / 云控字段，跟 §10 已有两个工具差异表对得上吗？→ 在差异表加一列</li>
+        </ol>
+        <div class="pull-quote notice">这是 AI Native 工作法的<b>复利来源</b>：每接入一个新工具，模块级 skill 就更厚一点，下一个工具的边际成本就更低一点。</div>
+      </div>
+    </section>
+
+    <!-- ============== 块 5 ============== -->
+    <section class="section" id="sec-5">
+      <div class="section-tag">// CHAPTER 05</div>
+      <h2>沉淀与复用资产</h2>
+      <div class="pull-quote"><b>一句话</b>：单次任务的产出沉淀成"下次任务的起点"，AI 协作的复利就在这里。</div>
+
+      <h3>Prompt 模板清单</h3>
+      <div class="cards">
+        <div class="card"><div class="idx">P1</div><div class="title">PRD 抽取</div><div class="desc">从 PRD 抽出结构化开发信息 · §3.1</div></div>
+        <div class="card"><div class="idx">P2</div><div class="title">边界声明</div><div class="desc">开发前圈地，列文件清单 · §3.2</div></div>
+        <div class="card"><div class="idx">P3</div><div class="title">修改清单</div><div class="desc">开发中实时产出修改记录 · §3.3</div></div>
+        <div class="card"><div class="idx">P4</div><div class="title">bug 修复</div><div class="desc">复现 + 二分定位 + 最小修复 · §3.4</div></div>
+        <div class="card"><div class="idx">P5</div><div class="title">guard 卫兵</div><div class="desc">防止 AI 偷偷扩大改动 · §3.4</div></div>
+        <div class="card"><div class="idx">P6</div><div class="title">DEVSKILL 自审</div><div class="desc">对照规范挑刺 · §4 Step 5</div></div>
+      </div>
+      <p>把这 6 个 prompt 存成片段，每次开工前粘贴，比现写省一半时间。</p>
+
+      <h3>Skill 文档清单（按层级）</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>层级</th><th>内容</th><th>在哪</th></tr></thead>
+          <tbody>
+            <tr><td><b style="color:var(--neon-1)">项目级</b></td><td>分层架构、命名、允许 / 禁止、分层职责</td><td><a href="#sec-refs" data-anchor="DEVSKILL">DEVSKILL.md</a></td></tr>
+            <tr><td><b style="color:var(--neon-2)">模块级</b></td><td>单个 feature 的接入规范、需求确认门禁、自检 + Review 清单</td><td><a href="#sec-refs" data-anchor="draft">docs/tool_guide_skill.md</a>（标杆）<br/>feature 内 README：<a href="#sec-refs" data-anchor="ct-readme">creation-tools/README.md</a>、<a href="#sec-refs" data-anchor="ct-guide">TOOL_TYPE_INTEGRATION_GUIDE.md</a></td></tr>
+            <tr><td><b style="color:var(--neon-3)">个人级</b></td><td>你常用的 prompt、习惯、口令</td><td>个人笔记 / <a target="_blank" href="https://github.com/nami-pvideo/spec/blob/main/docs/webdev-claude/README.md"><code>~/.claude/</code></a></td></tr>
+            <tr><td><b style="color:var(--neon-5)">团队级</b></td><td>review checklist、避坑清单</td><td><a target="_blank" href="https://github.com/nami-pvideo">团队github</a> / 团队 wiki / 飞书文档 等</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pull-quote notice">⚡ <b>模块级 skill 是 AI Native 的高复利产物</b>：<a href="#sec-refs" data-anchor="draft">tool_guide_skill.md</a> 这种规范一旦成型，每个新 tool_type 接入都把它当宪法 + 检查清单用，AI 不用每次重新理解模块，新人也能用同一份文档上手。</div>
+
+      <h3>MCP 工具清单（项目可用）</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>名称</th><th>干什么</th><th>关键场景</th></tr></thead>
+          <tbody>
+            <tr><td><b>Figma</b></td><td>读设计稿、生成代码、code-connect</td><td>还原视觉、对接 design tokens</td></tr>
+            <tr><td><b>Context7</b></td><td>拉第三方库最新文档</td><td>防止 AI 幻觉 API</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>避坑清单（AI 写出的常见反模式）</h3>
+      <p>按 <a href="#sec-refs" data-anchor="DEVSKILL">DEVSKILL.md</a> 红线归纳，让 AI 自查时照着对：</p>
+      <ul class="bad-list">
+        <li>ui/ 里直接 <code>import request</code> 调 API → 应走 service</li>
+        <li>store 内直接 <code>request.get</code> → 绕开 service 层</li>
+        <li>在组件里直接赋值 <code>store.xx = ...</code> → 应走 action</li>
+        <li>写一层"包 store 的 hooks" → 过度设计，直接用 observer</li>
+        <li>domain 函数里调 <code>message.error</code> → 副作用应留在 service</li>
+        <li>跨 feature 互相 import store → 循环依赖，提到 shared 或重新设计</li>
+        <li>把临时状态塞进 <code>shared/stores</code> → 只有真正全局的才进 shared</li>
+        <li>顺手重构无关代码 → 用 P5 prompt 拦住</li>
+      </ul>
+
+      <h4>模块级红线示例（来自 <a href="#sec-refs" data-anchor="draft">tool_guide_skill.md</a> 创作工具模块）</h4>
+      <ul class="bad-list">
+        <li>在单个 Panel 里写 <code>if (toolType === 'A') ... else ...</code> → 应拆独立 Panel + 独立 domain（§2.4）</li>
+        <li>云控为空时新建 <code>fallbacks.ts</code> 硬编码兜底 → 没数据就空态或禁用（§15.8 红线）</li>
+        <li>新增工具时改 <code>router/index.tsx</code> → 路由已通配，不许改（§15.3.2）</li>
+        <li>在 <code>ToolEditorResultPanel</code> 按工具写空状态分支 → 统一走云控 <code>emptyState</code>（§12.1）</li>
+        <li>未经用户确认就改已有工具 Panel / domain → §15.5.0 红线，须先确认</li>
+        <li>在 <code>hydrateToolEditor</code> / <code>cloudConfig/index</code> 写 <code>if/else</code> 分支 → 应表驱动注册到 <code>toolRegistry</code>（§15.4）</li>
+      </ul>
+      <div class="pull-quote notice">这些"模块级反模式"无法靠项目级 DEVSKILL 拦住，必须靠模块级 skill 文档喂给 AI。</div>
+
+      <h3>效率自评维度</h3>
+      <div class="cards">
+        <div class="card"><div class="idx">M1</div><div class="title">一次通过率</div><div class="desc">AI 第一次产出的代码，需返工的比例</div></div>
+        <div class="card"><div class="idx">M2</div><div class="title">边界违规率</div><div class="desc">实际改动 vs 事前声明的偏差次数</div></div>
+        <div class="card"><div class="idx">M3</div><div class="title">复用命中率</div><div class="desc">每次任务平均复用了多少已有资产</div></div>
+        <div class="card"><div class="idx">M4</div><div class="title">PR 阅读时长</div><div class="desc">reviewer 看完 diff 的时间</div></div>
+        <div class="card"><div class="idx">M5</div><div class="title">资产新增数</div><div class="desc">每周新增多少 prompt / skill / 反例进库</div></div>
+      </div>
+    </section>
+
+    <!-- ============== 工具分享 · Codegraph ============== -->
+    <section class="section" id="sec-tool-codegraph">
+      <div class="section-tag">// TOOLS · CODEGRAPH</div>
+      <h2>工具分享 · Codegraph</h2>
+      <div class="pull-quote"><b>一句话</b>：Codegraph 把整个仓库的<b>符号、调用、文件依赖</b>预先构建成 SQLite 知识图谱，作为 AI 的"代码索引大脑"，替代 grep + Read 的低效循环，让 AI 在动手前先<b>读懂代码</b>。</div>
+
+      <h3>它解决什么问题？</h3>
+      <p>用 Claude / Cursor 等 AI 写代码时，最大的成本之一是<b>探索代码库</b>：</p>
+      <ul class="bad-list">
+        <li>问 "X 是怎么实现的"，AI 反复 grep + Read 文件，耗费几十次工具调用</li>
+        <li>问 "改这个函数会影响哪些地方"，AI 只能凭直觉猜，漏掉动态调用 / 回调 / JSX children</li>
+        <li>跨文件追踪一条调用链，AI 经常半路丢线索，给出半截答案</li>
+        <li>同名函数 / 重载 / 多版本，AI 拿错文件做修改</li>
+      </ul>
+      <p>Codegraph 的思路是：<b>把"代码理解"这步预先做掉</b>。它在本地把仓库索引成 SQLite 数据库（毫秒级查询、文件 watcher 同步），AI 调用一次 <code>codegraph_explore</code> 就能拿到「相关符号的完整源码 + 调用关系 + 文件归组」，省掉几十次试探性 grep。</p>
+
+      <h3>核心能力</h3>
+      <div class="cards">
+        <div class="card"><div class="idx">01</div><div class="title">符号图谱</div><div class="desc">每个函数 / 类 / 变量都是图中的 node，调用 / import / 继承是 edge，SQLite 存储</div></div>
+        <div class="card"><div class="idx">02</div><div class="title">毫秒级查询</div><div class="desc">读操作 sub-ms；写后约 1s 内通过 file watcher 同步增量</div></div>
+        <div class="card"><div class="idx">03</div><div class="title">语义化探索</div><div class="desc"><code>codegraph_explore</code> 接受自然语言或符号列表，直接返回相关源码</div></div>
+        <div class="card"><div class="idx">04</div><div class="title">调用链追踪</div><div class="desc"><code>callers</code> / <code>callees</code> / <code>impact</code> 三件套，覆盖动态分发与 JSX 回调</div></div>
+        <div class="card"><div class="idx">05</div><div class="title">MCP 协议接入</div><div class="desc">通过 MCP Server 对接 Claude Code / Cursor / Windsurf 等 AI 客户端</div></div>
+        <div class="card"><div class="idx">06</div><div class="title">本地化 & 隐私</div><div class="desc">索引存本地 SQLite，不上传代码，离线可用</div></div>
+      </div>
+
+      <h3>工具一览（最常用的 6 个）</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>工具</th><th>意图</th><th>典型问句</th></tr></thead>
+          <tbody>
+            <tr><td><code>codegraph_explore</code></td><td><b>主力</b>·读懂一块代码</td><td>"X 是怎么工作的？" / "从 A 到 B 的调用路径" / 给一组符号名"打包出源码"</td></tr>
+            <tr><td><code>codegraph_search</code></td><td>定位符号</td><td>"叫 X 的函数 / 类在哪？"</td></tr>
+            <tr><td><code>codegraph_callers</code></td><td>反向追溯</td><td>"谁在调用这个函数？"</td></tr>
+            <tr><td><code>codegraph_callees</code></td><td>正向追溯</td><td>"这个函数都调了什么？"</td></tr>
+            <tr><td><code>codegraph_impact</code></td><td>影响面分析</td><td>"我改这个函数会炸掉哪些地方？"</td></tr>
+            <tr><td><code>codegraph_node</code></td><td>取单个符号完整源码</td><td>名字重载、被 explore 裁剪过的函数，要看完整体</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>它和 grep / Read 的本质区别</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>维度</th><th>grep + Read</th><th>Codegraph</th></tr></thead>
+          <tbody>
+            <tr><td>查询方式</td><td>字符串匹配</td><td>结构化图谱查询（基于 AST + 调用关系）</td></tr>
+            <tr><td>动态调用 / 回调</td><td>❌ 跟不动</td><td>✅ 包含动态分发 / React 重渲染 / JSX children 跳转</td></tr>
+            <tr><td>调用次数</td><td>探索一次复杂问题往往几十次工具调用</td><td>通常 1~3 次 <code>explore</code> 就够</td></tr>
+            <tr><td>重名 / 重载</td><td>容易拿错文件</td><td>按 node 区分，精确到符号身份</td></tr>
+            <tr><td>影响面分析</td><td>必须人肉读所有 caller</td><td><code>impact</code> 一次输出</td></tr>
+            <tr><td>实时性</td><td>实时</td><td>~1s 延迟（file watcher）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>AI Native 场景下的典型用法</h3>
+
+      <h4>场景 1 · 接需求前先读懂相关模块</h4>
+      <div class="prompt">
+        <div class="prompt-head"><span class="name">让 AI 先用 codegraph 摸清现状再动手</span><button class="copy" data-target="prompt-cg1">COPY</button></div>
+        <pre id="prompt-cg1">在动手之前，请先用 codegraph_explore 读懂以下范围：
+- 关键符号：ToolEditorPanel / TOOL_EDITOR_REGISTRY / hydrateToolEditor
+- 自然语言问句："creation-tools 模块的工具注册和分发是怎么走的？"
+
+输出：
+1. 涉及的核心文件清单（按职责分组）
+2. 从用户点击到 store 更新的调用链
+3. 哪些地方是表驱动的扩展点（我接新工具应该追加在哪）
+
+不要凭印象回答，所有结论都要有 codegraph 返回的源码作为依据。</pre>
+      </div>
+
+      <h4>场景 2 · 改动前先看影响面（替代肉眼 grep）</h4>
+      <div class="prompt">
+        <div class="prompt-head"><span class="name">用 impact 把"改这个会炸什么"问清楚</span><button class="copy" data-target="prompt-cg2">COPY</button></div>
+        <pre id="prompt-cg2">我打算修改 buildSubmitParams 的签名（新增一个可选参数 ctx）。
+请先用 codegraph_impact 给出所有受影响的调用点：
+- 直接调用方
+- 间接调用方（经过 toolRegistry 表驱动分发的）
+- 测试文件
+
+再给出最小迁移方案：哪些必须改、哪些可以靠默认值兼容。
+所有结论必须给出 file:line 引用，不要靠想象。</pre>
+      </div>
+
+      <h4>场景 3 · 跨文件追一条流（callbacks / 动态分发也跟得动）</h4>
+      <div class="prompt">
+        <div class="prompt-head"><span class="name">从入口追到 store 更新，理清整条流</span><button class="copy" data-target="prompt-cg3">COPY</button></div>
+        <pre id="prompt-cg3">用 codegraph_explore 把这几个符号一起放进去：
+  ToolEditorPanel handleSubmit dispatchGenerate generationStore.startTask
+
+我要看从用户点击"生成"按钮，到 store.startTask 被调用之间的完整调用链，
+包括所有中间的回调 / observer / dispatch hop。
+
+只用 codegraph 返回的源码作答，不要 grep。</pre>
+      </div>
+
+      <h4>场景 4 · 配合 P5 guard，验证 AI 是否越界</h4>
+      <div class="prompt">
+        <div class="prompt-head"><span class="name">用 codegraph 验证 AI 改动是否真的只动了应该动的地方</span><button class="copy" data-target="prompt-cg4">COPY</button></div>
+        <pre id="prompt-cg4">你刚才声称只修改了 domain/yourTool/buildSubmitParams.ts。
+请用 codegraph_callers 列出该函数的所有调用方，
+然后用 codegraph_impact 给出真实影响面，对照 git diff 检查：
+- 是否存在你"无意中改到"的调用方
+- 是否存在你"以为没影响但其实有"的下游
+任何不一致都要立刻指出，不要替自己开脱。</pre>
+      </div>
+
+      <h3>什么时候用 / 什么时候别用</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>场景</th><th>推荐</th></tr></thead>
+          <tbody>
+            <tr><td>读懂一块陌生代码 / 架构 / 追调用链</td><td>✅ <code>codegraph_explore</code>（首选，往往一次就够）</td></tr>
+            <tr><td>问 "X 在哪里定义"</td><td>✅ <code>codegraph_search</code></td></tr>
+            <tr><td>改函数前的影响面分析</td><td>✅ <code>codegraph_impact</code></td></tr>
+            <tr><td>看单个符号完整体（被 explore 裁剪了）</td><td>✅ <code>codegraph_node</code></td></tr>
+            <tr><td>调试运行时报错 / 看具体一行字符串</td><td>❌ 用普通 Read / Grep 就够</td></tr>
+            <tr><td>查 git 历史 / 谁改的</td><td>❌ 用 <code>git log</code> / <code>git blame</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>接入方式（MCP）</h3>
+      <p>Codegraph 通过 MCP 协议接入 AI 客户端，本地跑一个索引进程 + MCP server：</p>
+      <ol>
+        <li>安装 codegraph CLI（参考 <a href="https://github.com/colbymchenry/codegraph" target="_blank">GitHub 仓库</a>）</li>
+        <li>在项目根目录执行索引命令，生成本地 SQLite 知识库</li>
+        <li>在 Claude Code / Cursor 的 MCP 配置里注册 codegraph server</li>
+        <li>开启 file watcher，后续编辑代码自动增量更新（约 1s 延迟）</li>
+        <li>在对话里直接调用 <code>codegraph_explore</code> 等工具 —— AI 自动识别可用工具</li>
+      </ol>
+      <div class="pull-quote notice">⚡ <b>关键心法</b>：把 codegraph 当成 AI 的"代码索引大脑"——<b>动手前先 explore，改动前先 impact</b>。它最大的价值不是替代 grep，而是<b>把"探索代码"这件事从几十次工具调用压缩到一两次</b>，让 AI 有更多预算花在真正的实现和验证上。</div>
+
+      <h3>和本工作法的结合点</h3>
+      <ul>
+        <li><b>P1 PRD 抽取阶段</b>：让 AI 用 <code>codegraph_explore</code> 把 PRD 提到的关键概念在代码里"对位"，避免脑补</li>
+        <li><b>P2 边界声明阶段</b>：用 <code>codegraph_callers</code> / <code>impact</code> 把"要改 X" 转成"会触碰这些 file:line"</li>
+        <li><b>P3 修改清单阶段</b>：每改一处，让 AI 顺手 explore 一下确认上下游没漏</li>
+        <li><b>P5 guard 阶段</b>：用 <code>impact</code> 反向核对 diff 是否真的"只动了该动的"</li>
+        <li><b>P6 自审阶段</b>：让 AI 用 codegraph 验证自己的修改有没有破坏 <a href="#sec-refs" data-anchor="DEVSKILL">DEVSKILL.md</a> 的分层约束</li>
+      </ul>
+
+      <h3>参考资料</h3>
+      <div class="cards">
+        <a class="card" href="https://github.com/colbymchenry/codegraph" target="_blank" style="border:1px solid var(--line)">
+          <div class="idx">GITHUB</div>
+          <div class="title">colbymchenry/codegraph</div>
+          <div class="desc">官方仓库 · 安装、配置、MCP 接入示例</div>
+        </a>
+        <a class="card" href="https://cloud.tencent.com/developer/news/3963930" target="_blank" style="border:1px solid var(--line)">
+          <div class="idx">ARTICLE</div>
+          <div class="title">腾讯云开发者社区介绍</div>
+          <div class="desc">中文导读 · 设计思路、与 grep 的对比、典型用法</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ============== 一键开工清单 ============== -->
+    <section class="section" id="sec-kit">
+      <div class="section-tag">// CHECKLIST</div>
+      <h2>一键开工清单</h2>
+      <div class="pull-quote">每次拿到新需求，照着走（点击勾选 ✓）：</div>
+      <ul class="checklist">
+        <li>看是否有现成模块级 skill（如接 creation-tools 新工具看 <a href="#sec-refs" data-anchor="draft">tool_guide_skill.md</a>），有就直接套门禁</li>
+        <li>PRD 用 <b>P1</b> prompt 抽一遍</li>
+        <li>找复用：先 grep / 看 features/ 与 shared/ui，再写新代码</li>
+        <li>用 <b>P2</b> prompt 声明边界（有模块级文档就用模块定制版）</li>
+        <li>让 AI 严格按 <a href="#sec-refs" data-anchor="DEVSKILL">DEVSKILL.md</a> + 模块级 skill 实现，参考 <a href="#sec-refs" data-anchor="video-gen">video-generation</a> 的分层</li>
+        <li>用 <b>P3</b> prompt 让 AI 边写边交修改清单</li>
+        <li>跑起来过主流程 + 边缘场景（有模块自检表就照着跑）</li>
+        <li>用 <b>P6</b> prompt 让 AI 自审</li>
+        <li>用 <b>P5</b> prompt 卡住额外改动</li>
+        <li>把可复用的片段升格为资产，<b>新坑回写到模块级 skill</b></li>
+      </ul>
+    </section>
+
+    <!-- ============== 关联文档 ============== -->
+    <section class="section" id="sec-refs">
+      <div class="section-tag">// REFERENCES</div>
+      <h2>关联文档</h2>
+      <div class="pull-quote">点击下方卡片打开对应文件（相对当前页面位置）。</div>
+      <div class="cards">
+        <a class="card" id="ref-DEVSKILL" href="../DEVSKILL.md" target="_blank" style="border:1px solid var(--line)">
+          <div class="idx">PROJECT LEVEL</div>
+          <div class="title">DEVSKILL.md</div>
+          <div class="desc">项目级开发规范 · 分层架构、命名、允许 / 禁止</div>
+        </a>
+        <a class="card" id="ref-draft" href="./tool_guide_skill.md" target="_blank" style="border:1px solid var(--line)">
+          <div class="idx">MODULE LEVEL</div>
+          <div class="title">tool_guide_skill.md</div>
+          <div class="desc">创作工具 tool_type 通用接入方案 · 标杆样本</div>
+        </a>
+        <a class="card" id="ref-codegraph-viz" href="./codegraph-viz/index.html" target="_blank" style="border:1px solid var(--line)">
+          <div class="idx">VISUALIZATION</div>
+          <div class="title">nami-video-web 代码可视化图谱</div>
+          <div class="desc">基于 codegraph 索引的模块 / 文件依赖图 · D3 力导向 · 支持搜索 / 高亮 / 跳转</div>
+        </a>
+        <a class="card" id="ref-creation-tools" href="../src/features/creation-tools/" target="_blank" style="border:1px solid var(--line)">
+          <div class="idx">FEATURE</div>
+          <div class="title">creation-tools/</div>
+          <div class="desc">案例锚点 · 包含 clothingTryOn / imageTransform 参考实现</div>
+        </a>
+        <a class="card" id="ref-ct-readme" href="../src/features/creation-tools/README.md" target="_blank" style="border:1px solid var(--line)">
+          <div class="idx">FEATURE DOC</div>
+          <div class="title">creation-tools/README.md</div>
+          <div class="desc">feature 内自述文档</div>
+        </a>
+        <a class="card" id="ref-ct-guide" href="../src/features/creation-tools/TOOL_TYPE_INTEGRATION_GUIDE.md" target="_blank" style="border:1px solid var(--line)">
+          <div class="idx">FEATURE DOC</div>
+          <div class="title">TOOL_TYPE_INTEGRATION_GUIDE.md</div>
+          <div class="desc">tool_type 接入指南（精简版）</div>
+        </a>
+        <a class="card" id="ref-video-gen" href="../src/features/video-generation/" target="_blank" style="border:1px solid var(--line)">
+          <div class="idx">FEATURE</div>
+          <div class="title">video-generation/</div>
+          <div class="desc">标准分层参考 · stores / services / domain 模式</div>
+        </a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <p><b>AI NATIVE · FRONTEND WORKFLOW</b> · v1.0</p>
+  <p>适用项目 <span>nami-video-web</span> · 配套规范 <a href="../DEVSKILL.md" target="_blank">DEVSKILL.md</a></p>
+</footer>
+
+<button class="nav-toggle" id="navToggle">≡</button>
+<div class="toast" id="toast">已复制到剪贴板</div>
+
+<script>
+  // ===== Mermaid =====
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#7c5cff',
+      primaryTextColor: '#fff',
+      primaryBorderColor: '#00e5ff',
+      lineColor: '#9aa0c5',
+      secondaryColor: '#14142b',
+      tertiaryColor: '#06060f',
+      fontFamily: 'Noto Sans SC, system-ui'
+    }
+  });
+
+  // ===== Copy =====
+  document.querySelectorAll('.copy').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.target;
+      const el = document.getElementById(id);
+      if (!el) return;
+      const text = el.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ DONE';
+        btn.classList.add('done');
+        showToast('Prompt 已复制');
+        setTimeout(() => {
+          btn.textContent = 'COPY';
+          btn.classList.remove('done');
+        }, 1500);
+      });
+    });
+  });
+
+  // ===== Toast =====
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  // ===== Anchor link interception (links inside content marked with data-anchor) =====
+  document.querySelectorAll('a[data-anchor]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const key = a.dataset.anchor;
+      const card = document.getElementById('ref-' + key);
+      if (card) {
+        document.getElementById('sec-refs').scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => {
+          card.style.transition = 'all .4s';
+          card.style.transform = 'scale(1.05)';
+          card.style.boxShadow = '0 0 40px rgba(255, 78, 205, 0.7)';
+          setTimeout(() => {
+            card.style.transform = '';
+            card.style.boxShadow = '';
+          }, 1000);
+        }, 600);
+      }
+    });
+  });
+
+  // ===== Nav highlight (intersection observer) =====
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.nav a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+
+  // ===== Checklist toggle =====
+  document.querySelectorAll('.checklist li').forEach(li => {
+    li.addEventListener('click', e => {
+      // 不要因为点击内部 a 而触发 done
+      if (e.target.tagName === 'A') return;
+      li.classList.toggle('done');
+    });
+  });
+
+  // ===== Mobile nav =====
+  const navEl = document.getElementById('nav');
+  document.getElementById('navToggle').addEventListener('click', () => {
+    navEl.classList.toggle('open');
+  });
+  navEl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navEl.classList.remove('open')));
+</script>
+
+</body>
+</html>
