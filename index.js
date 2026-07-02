@@ -20,6 +20,13 @@ const entries = [
     title: "创作工具接入指南",
     desc: "创作工具的接入方式与上手指引。",
     sharer: "郭汾"
+  },
+  {
+    href: "page/information-matrix-for-ai.html",
+    icon: "🧠",
+    title: "构建信息环境，提升 AI 能力",
+    desc: "同一个 AI 模型，为什么在编程领域一气呵成，在商业领域举步维艰？从信息环境视角解读 AI 应用管理。",
+    sharer: "黄锦"
   }
 ];
 

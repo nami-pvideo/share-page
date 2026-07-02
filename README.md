@@ -17,6 +17,7 @@ share-page/
 ├── page/               # 各个分享页面
 │   ├── ai-coding-info-disclosure-deepseek.html
 │   ├── ai-native-frontend-workflow.html
+│   ├── information-matrix-for-ai.html
 │   └── create_tool.html
 └── resource/           # 各页面对应的 markdown 原文资料
 ```
@@ -30,6 +31,7 @@ share-page/
 | [信息披露管理：提升 AI 编程效率的核心杠杆](page/ai-coding-info-disclosure-deepseek.html) | 从信息披露视角，探讨如何系统性提升 AI 编程的协作效率 | 黄锦 |
 | [AI Native 前端开发工作法](page/ai-native-frontend-workflow.html) | 面向 AI 原生时代的前端开发流程与实践分享 | 史春雨 |
 | [创作工具接入指南](page/create_tool.html) | 创作工具的接入方式与上手指引 | 郭汾 |
+| [构建信息环境，提升 AI 能力](page/information-matrix-for-ai.html) | 从信息环境视角，解读 AI 应用管理的核心杠杆与工程实践 | 黄锦 |
 
 ---
 
