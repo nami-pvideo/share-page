@@ -515,22 +515,67 @@ footer { text-align:center; padding:48px 24px; color:var(--text-secondary); font
     </div>
 
     <h4 style="margin:20px 0 12px;">模型进化下，什么 Skill 会消失，什么会留存</h4>
-    <div class="matrix">
+    <p>一个自然的问题：模型越来越强，Skill 会不会被模型「学会」而变得多余？</p>
+    <p style="margin-top:8px;">答案是：<strong>会，但不止于「消失」——有些 Skill 甚至会从「有用」变成「有害」。</strong> Claude Fable 5 的官方迁移指南给出了一个容易被低估的警告：</p>
+    <blockquote style="margin:12px 0;padding:12px 20px;background:#fef3c7;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;font-style:italic;color:#92400e;">
+      "Skills developed for prior models are often too prescriptive for Claude Fable 5 and can degrade output quality. Review and consider removing older instructions if default performance is better."
+    </blockquote>
+    <p>这不是说旧 Skill 过时了——旧 Skill 在<strong>拖后腿</strong>。当模型的指令遵循能力、模糊任务处理能力、自校验能力发生代际跃迁时，为弱模型设计的规约式 Skill 不是在帮它，而是在限制它。就像给一个资深工程师贴满便签「记得先 git pull」「写完代码要跑测试」——便签本身成了噪音。这引出一个全新的 Skill 生命周期维度：</p>
+    <div class="matrix" style="margin-top:16px;">
       <table>
         <thead>
-          <tr><th>Skill 类型</th><th>模型能学会吗？</th><th>命运</th></tr>
+          <tr><th>Skill 类型</th><th>弱模型下</th><th>Fable 5 级模型下</th><th>原因</th></tr>
         </thead>
         <tbody>
-          <tr><td>通用工程纪律（TDD、先查根因）</td><td>✅ 能被吸收</td><td>逐渐消失——更强的模型不再需要外部提醒</td></tr>
-          <tr><td>通用流程模板（brainstorming 九步）</td><td>✅ 能被吸收</td><td>逐渐消失——模型原生就知道怎么拆解任务</td></tr>
-          <tr><td>合理化拦截（「太简单不需要测试」）</td><td>⚠️ 部分吸收</td><td>部分留存——模型越强越少狡辩，但总有新借口</td></tr>
-          <tr><td style="font-weight:700;">领域知识注入（五级回溯法）</td><td>❌ 学不会</td><td><strong>永久留存</strong>——不在任何公开训练数据里</td></tr>
-          <tr><td style="font-weight:700;">项目/团队约定（命名规范等）</td><td>❌ 学不会</td><td><strong>永久留存</strong>——组织私有信息</td></tr>
+          <tr>
+            <td><strong>过于规约化的流程模板</strong><br><small>（"第一步 grep，第二步读文件…"）</small></td>
+            <td>✅ 有用</td>
+            <td>❌ <strong>降质</strong>——限制模型更优的判断</td>
+            <td>Fable 5 指令遵循极强，详细步骤变成了紧身衣。官方建议：用简短意图替代枚举式指令</td>
+          </tr>
+          <tr>
+            <td><strong>自我校验 / 自我解释指令</strong><br><small>（"先检查答案""复述推理"）</small></td>
+            <td>✅ 有用</td>
+            <td>❌ <strong>有害</strong>——触发 safety refusal</td>
+            <td>Fable 5 将 reasoning 提取视为安全边界；要求模型复述推理会触发 <code>reasoning_extraction</code> refusal，导致任务降级到 Opus 4.8</td>
+          </tr>
+          <tr>
+            <td>通用工程纪律<br><small>（先查根因再修、先写测试再写代码）</small></td>
+            <td>✅ 有用</td>
+            <td>⚠️ <strong>精简留存</strong>——核心原则保留，详细步骤删除</td>
+            <td>模型原生具备纪律意识，但团队可能需要比默认更强的约束力。保留一句话原则，删掉九步清单</td>
+          </tr>
+          <tr>
+            <td>通用流程模板<br><small>（brainstorming 九步清单、TDD 红绿重构）</small></td>
+            <td>✅ 有用</td>
+            <td>⚠️ <strong>精简留存</strong>——框架保留，微操删除</td>
+            <td>Fable 5 能自主拆解任务，甚至能<strong>在任务中即时更新 Skill</strong>（官方确认），不需要人预设每一步</td>
+          </tr>
+          <tr>
+            <td>合理化拦截<br><small>（「太简单不需要测试」的反驳）</small></td>
+            <td>✅ 有用</td>
+            <td>⚠️ <strong>部分留存</strong>——新模型有新借口</td>
+            <td>Fable 5 在高 effort 下会过度做事（unrequested refactoring），需要新的拦截逻辑而非旧的</td>
+          </tr>
+          <tr>
+            <td><strong>领域知识注入</strong><br><small>（root-cause-tracing 五级回溯法）</small></td>
+            <td>✅ 关键</td>
+            <td>✅ <strong>永久留存</strong></td>
+            <td>人类在特定场景下反复试错的结晶，不在任何公开训练数据里</td>
+          </tr>
+          <tr>
+            <td><strong>项目/团队约定</strong><br><small>（架构分层规则、命名规范、部署流程）</small></td>
+            <td>✅ 关键</td>
+            <td>✅ <strong>永久留存</strong></td>
+            <td>组织私有信息，模型永远接触不到——除非团队自己把约定写进了公开文档</td>
+          </tr>
         </tbody>
       </table>
     </div>
+    <p style="margin-top:16px;"><strong>模型升级 = 裁剪 Skill 的信号。</strong> 人的本能是为 Skill 系统做加法——找到一个失败模式，加一条 Skill。但 Fable 5 的教训是反过来的：<strong>每次模型代际升级，第一件事不是加 Skill，而是删 Skill。</strong> Anthropic 的原话是——"Capability improvements at this level are also a good prompt to re-evaluate which instructions, tools, and guardrails are still needed."</p>
+    <p>这意味着 Skill 工程的正确节奏不是「积累 → 积累 → 积累」，而是<strong>「积累 → 裁剪 → 积累 → 裁剪」</strong>——每次模型升级触发一次审计，把那些从「帮助」退化到「束缚」的 Skill 移除。裁掉的不是信息，是<strong>过时的信息编码方式</strong>——同一份领域知识，在 Fable 5 下可能只需要一句话，而不是一页纸。</p>
     <div class="tip">
-      <strong>💡 核心洞察：</strong>Skill 的长期价值不在于「教 AI 怎么做」，而在于「告诉 AI 关于这个环境它不可能从训练数据中知道的事」。模型进化让第一层（世界知识）越来越强，但第二层（领域共识）和第三层（当前需求）的信息永远需要人来构建。<strong>模型越通用，环境越重要。</strong> Skill 不是模型的补丁，是信息环境的可编程接口。
+      <strong>💡 核心洞察：</strong>Skill 的长期价值不在于「教 AI 怎么做」，而在于「告诉 AI 关于这个环境它不可能从训练数据中知道的事」。模型进化让第一层越来越强——强到过度的外部指令反而干扰它的判断。但第二层和第三层信息（私有领域知识、团队约定、组织规则）永远需要人来构建。而且，和直觉相反：<strong>模型越强，Skill 越需要「少而精」</strong>——因为强模型自身的判断力已经超过了弱模型时代那些防御性规约的价值。<br><br><strong>模型越通用，环境越重要。</strong> 但环境信息的编码方式必须跟着模型一起进化——为 Opus 写的保姆式 Skill，可能正是 Fable 5 发挥全部能力的枷锁。Skill 不是模型的补丁，是信息环境的可编程接口——这个接口的 API 设计，必须随底层能力升级而重构。
     </div>
   </div>
   <div class="card">
@@ -815,6 +860,6 @@ document.querySelectorAll('.code-block').forEach(block => {
   block.appendChild(btn);
 });
 </script>
-<script src="../shared/header.js"></script>
+  <script src="../shared/header.js"></script>
 </body>
 </html>
