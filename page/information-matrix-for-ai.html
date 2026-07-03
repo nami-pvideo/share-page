@@ -647,6 +647,26 @@ footer { text-align:center; padding:48px 24px; color:var(--text-secondary); font
         </tbody>
       </table>
     </div>
+<div style="background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 32px;margin-bottom:24px;border:1px solid var(--border);">
+    <h3 style="margin-bottom:16px;">🔄 为什么不让 AI 自动化运转？</h3>
+    <p>到这里，一条完整的逻辑链已经成型：</p>
+    <ul class="checklist" style="margin-top:12px;">
+      <li><strong>三层信息模型中</strong>，第一层（世界知识）AI 满载，第二层（领域共识）通过环境文档 + Skills 补齐，第三层（当前需求）通过 Automations 触发源 + Connectors 实时拉取</li>
+      <li><strong>3.3 节验证了</strong>：环境越丰富，人的指令越能抽象——从「步骤级」降维到「意图级」</li>
+      <li><strong>5.4 节验证了</strong>：Skill 系统把决策知识（怎么做）从人脑子里搬到了磁盘上</li>
+      <li><strong>Fable 5 级模型</strong>具备长程自主推理、强指令遵循、模糊任务拆解能力</li>
+    </ul>
+    <p style="margin-top:12px;">这意味着什么？当决策所需的信息（第二层）和实现所需的信息（第三层）都已经被编码进环境，而 AI 的逻辑推理能力和世界知识（第一层）又足以从这些信息中推导出执行路径——<strong>为什么还要人在每一步都发指令？</strong></p>
+    <p style="margin-top:8px;">这并非理论推演。编程领域已经在跑：</p>
+    <ul class="checklist" style="margin-top:8px;">
+      <li><strong>Claude Code 的 Loop</strong>：工程师说一句「给订单模块加防超卖锁」，Agent 自动 Discover → Plan → Execute → Verify → Iterate，全程人只发了一条意图</li>
+      <li><strong>Oh My Pi 的 Loop</strong>：CI 失败日志触发 Auto Agent，自动定位、修复、提 PR，工程师醒来看到的是 Merge Request</li>
+      <li><strong>OpenAI Codex</strong>：3 人团队 5 个月 1500 个 PR——不是因为 3 个人写了 1500 个 PR，是因为 Loop 自动把「目标」翻译成了「PR」</li>
+    </ul>
+    <div class="tip" style="margin-top:16px;">
+      <strong>💡 核心洞察：</strong>Loop Engineering 的本质不是自动化执行，而是<strong>自动化决策</strong>——让 AI 在信息环境完备的前提下，自己决定「下一步该做什么」。人的角色从「每一步都下指令」退到「定义目标和停止条件」——这正是引言中 Boris Cherny 说的：你不应该再提示 Agent 了，你应该设计循环来驱动 Agent。<br><br>信息环境建设做到极致，终点不是「AI 更好用」，而是<strong>「人不再需要给 AI 下指令」</strong>——人只需要定义「什么算做完」，Loop 自己去发现「什么需要做」、自己去计划「怎么做」、自己去验证「做对了吗」。
+    </div>
+  </div>
   </div>
 
   <div class="tip">
