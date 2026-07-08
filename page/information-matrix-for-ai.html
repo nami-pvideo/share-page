@@ -582,11 +582,16 @@ footer { text-align:center; padding:48px 24px; color:var(--text-secondary); font
       </table>
     </div>
 
-    <p style="margin-top:16px;"><strong>Loop 的自主性，本质上是信息环境的完整性。</strong>编程领域已经在跑：Claude Code 的 15 字意图驱动 5 阶段 Loop、Oh My Pi 的 CI 失败日志自动触发修复、OpenAI Codex 的 3 人团队 1500 个 PR。商业领域的差距，本质上是"信息从哪里来"那一列的空白——不是缺少 Loop 引擎，而是缺少 Loop 的燃料：信息环境。</p>
+    <p style="margin-top:16px;">Loop 的出现，是信息环境成熟的自然结果。当第一层和第二层信息已由环境全面托管，第三层通过外部数据源（CI 日志、Issue 系统、数据告警）实时打通，Loop 的每个阶段就有了确定的输入——Discover 从第三层触发，Plan 从第二层拉取规范，Execute 结合第一层能力与 Connectors 的精准数据，Verify 由独立 Agent 审查，Iterate 将结果持久化到外部存储。信息不再需要人逐轮注入，Agent 自己就能完成「发现→计划→执行→验证→迭代」的闭环。</p>
+
+    <p style="margin-top:12px;">这张表揭示了一个基本事实：<strong>Loop 的自主性，本质上是信息环境的完整性。</strong> 当第二层信息覆盖了领域共识，第三层打通了实时数据源，Loop 的每个阶段就有了明确的输入——AI 不再需要猜测，每一步都有信息支撑。</p>
+
+    <p style="margin-top:12px;">更进一步看，维持 Loop 产出质量的工程实践——整洁的代码库让 Agent 模仿已有模式、Skills 提供自我验证标准、触手可及的文档让 Agent 自主拉取最佳实践、独立 Agent 审查不受上下文污染、将每次失败的教训固化为规则——本质上都是在把第一层和第二层信息全面交由 AI 托管。这意味着，<strong>当项目的信息环境达到这个成熟度之后，用户真正需要亲自补充的只剩下第三层——当前需求（改什么、验收标准是什么、边界在哪）。</strong> 内部实现细节、技术方案选择、代码风格——这些已经被信息环境和 Loop 自动接管。减少人类在微观执行层面的干预，让人的精力聚焦到唯一机器无法代劳的事：「做什么」和「算不算做完」。</p>
 
     <div class="tip">
-      <strong>💡 核心洞察：</strong>构建信息环境，最终目标不是让 AI「更好用」，而是让 AI 具备自主运转的前提条件。信息环境越丰富 → Agent 从环境中能补全的信息越多 → 人的指令可以越抽象 → Loop 的自主性越强。从「步骤级」指令降维到「意图级」，最终到「目标级」——人只需要定义「什么算做完」，Loop 自己去发现、计划、验证。
+      <strong>💡 核心洞察：</strong>这正是 3.4 节验证的正循环：信息环境越丰富 → Agent 从环境中能补全的信息越多 → 人的指令可以越抽象 → Loop 的自主性越强。从「步骤级」指令降维到「意图级」，最终到「目标级」——人只需要定义「什么算做完」，Loop 自己去发现、计划、验证。构建信息环境，最终目标不是让 AI「更好用」，而是让 AI 具备自主运转的前提条件。
     </div>
+
   </div>
 </section>
 
@@ -741,6 +746,5 @@ footer { text-align:center; padding:48px 24px; color:var(--text-secondary); font
 })();
 </script>
 
-  <script src="../shared/header.js"></script>
 </body>
 </html>
